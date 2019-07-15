@@ -1,15 +1,12 @@
 package command.processors;
 
-import com.sun.imageio.spi.RAFImageOutputStreamSpi;
 import dao.DAORouter;
-import dao.ExpertDAO;
 import dao.ProjectDAO;
 import dao.exceptions.DAOAlreadyRegisteredException;
 import database.Database;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.processing.Processor;
 import java.io.IOException;
 
 public class QueryAllCommandProcessorTest {

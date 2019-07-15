@@ -4,6 +4,8 @@ import command.exceptions.InvalidCommandFormatException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 public class Command {
     private String cmd;
@@ -17,6 +19,15 @@ public class Command {
             System.arraycopy(splitCommand, 1, args, 0, splitCommand.length - 1);
         } else {
             args = null;
+        }
+    }
+
+    public Command(String cmd, Collection<String> args) {
+        this.cmd = cmd;
+        this.args = new String[args.size()];
+        int idx = 0;
+        for (String arg : args) {
+            this.args[idx++] = arg;
         }
     }
 
@@ -39,6 +50,10 @@ public class Command {
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder.toString();
+    }
+
+    public byte[] serialize() {
+        return this.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     public static Command getOneCommandFromInputStream(InputStream inputStream) throws InvalidCommandFormatException {

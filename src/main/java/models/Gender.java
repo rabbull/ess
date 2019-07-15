@@ -1,7 +1,5 @@
 package models;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 public class Gender {
     public boolean isMale;
 
