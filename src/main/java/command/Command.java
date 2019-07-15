@@ -1,13 +1,14 @@
 package command;
 
 import command.exceptions.InvalidCommandFormatException;
+import common.Serializable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
-public class Command {
+public class Command implements Serializable {
     private String cmd;
     private String[] args;
 

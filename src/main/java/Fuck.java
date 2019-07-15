@@ -1,12 +1,13 @@
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
+import models.entities.Profession;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.IOException;
+import java.io.Reader;
 
 public class Fuck {
     public static void main(String[] args) {
-        String en = "123";
-        byte[] bytes = en.getBytes(StandardCharsets.UTF_8);
-        System.out.println(Arrays.toString(bytes));
     }
 }

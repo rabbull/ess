@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.ProjectMapper">
+
+    <resultMap id="ProjectMap" type="models.entities.Project">
+        <id property="id" column="id" javaType="java.lang.Integer"/>
+        <result property="name" column="name" javaType="java.lang.String"/>
+        <result property="description" column="description" javaType="java.lang.String"/>
+        <result property="expectedExpertNumber" column="expert_number_expected" javaType="java.lang.Integer"/>
+        <result property="realExpertNumber" column="expert_number_real" javaType="java.lang.Integer"/>
+        <result property="finished" column="finished" javaType="java.lang.Boolean"/>
+    </resultMap>
+
+    <insert id="insertProject" useGeneratedKeys="true" keyProperty="id">
+        insert into main.Project (name, description, expert_number_expected, expert_number_real, finished)
+        values (#{name}, #{description}, #{expectedExpertNumber}, #{realExpertNumber}, #{finished})
+    </insert>
+
+    <update id="updateProject">
+        update main.Project set name=#{name}, description=#{description}, expert_number_expected=#{expectedExpertNumber}, expert_number_real=#{realExpertNumber} where id=#{id}
+    </update>
+
+    <delete id="deleteProject" parameterType="int">
+        delete from main.Project where id=#{id};
+    </delete>
+
+    <select id="selectProjectById" parameterType="int" resultMap="ProjectMap">
+        select * from main.Project where id=#{id};
+    </select>
+
+    <select id="selectAllProjects" resultMap="ProjectMap">
+        select * from main.Project;
+    </select>
+</mapper>
