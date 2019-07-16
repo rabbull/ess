@@ -2,8 +2,6 @@ import command.Command;
 import command.CommandRouter;
 import command.exceptions.*;
 import command.processors.MessageCommandProcessor;
-import dao.BaseDAO;
-import database.Database;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +12,6 @@ public class Server implements ServerInterface {
     private ServerSocket serverSocket;
 
     private CommandRouter commandRouter;
-
-    private Database database;
 
     public Server(ServerSocket serverSocket) {
         this.registerServerSocket(serverSocket);
