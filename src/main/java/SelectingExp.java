@@ -86,7 +86,7 @@ public class SelectingExp {
 
     public static List<Profession> maj_3 = new ArrayList<>();
 
-
+    public static Expert[] exp_selected;
 
     public static JComponent SelectingExDeliver(boolean isRerolling, Project p) {
         try{
@@ -94,7 +94,7 @@ public class SelectingExp {
             SwingNovice.comOut.write(get_method_options.serialize());
         }
         catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
+            System.out.println(ioe.getMessage());
         }
 
         try{
@@ -105,7 +105,7 @@ public class SelectingExp {
             }
         }
         catch (InvalidCommandFormatException e){
-            System.out.println(e.fillInStackTrace());
+            System.out.println(e.getMessage());
         }
 //---------------------------------------------------------
         try{
@@ -113,7 +113,7 @@ public class SelectingExp {
             SwingNovice.comOut.write(get_biding_options.serialize());
         }
         catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
+            System.out.println(ioe.getMessage());
         }
         try{
             Command bidings = Command.getOneCommandFromInputStream(SwingNovice.comIn);
@@ -123,7 +123,7 @@ public class SelectingExp {
             }
         }
         catch (InvalidCommandFormatException e){
-            System.out.println(e.fillInStackTrace());
+            System.out.println(e.getMessage());
         }
 //----------------------------------------------------------------------------------
         try{
@@ -131,7 +131,7 @@ public class SelectingExp {
             SwingNovice.comOut.write(get_industry_options.serialize());
         }
         catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
+            System.out.println(ioe.getMessage());
         }
         try{
             Command industrys = Command.getOneCommandFromInputStream(SwingNovice.comIn);
@@ -141,7 +141,7 @@ public class SelectingExp {
             }
         }
         catch (InvalidCommandFormatException e){
-            System.out.println(e.fillInStackTrace());
+            System.out.println(e.getMessage());
         }
 
         //-----------------------------------------------------------------------
@@ -151,7 +151,7 @@ public class SelectingExp {
             SwingNovice.comOut.write(get_organ_options.serialize());
         }
         catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
+            System.out.println(ioe.getMessage());
         }
         try{
             Command organs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
@@ -161,7 +161,7 @@ public class SelectingExp {
             }
         }
         catch (InvalidCommandFormatException e){
-            System.out.println(e.fillInStackTrace());
+            System.out.println(e.getMessage());
         }
 
 
@@ -372,7 +372,7 @@ public class SelectingExp {
             SwingNovice.comOut.write(get_pros.serialize());
         }
         catch (IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
+            System.out.println(ioe.getMessage());
         }
         try{
             Command pros = Command.getOneCommandFromInputStream(SwingNovice.comIn);
@@ -382,7 +382,7 @@ public class SelectingExp {
             }
         }
         catch (InvalidCommandFormatException icfe){
-            System.out.println(icfe.fillInStackTrace());
+            System.out.println(icfe.getMessage());
         }
 //--------------------------------------------------------------------------------
         Box pro_1_box = Box.createHorizontalBox();
@@ -560,17 +560,16 @@ public class SelectingExp {
                 out_panel.add(Rolling_process);
 
 //                String[][] exp_selected = {{"王八", "四川大学", "17883430983"}, {"小土豆", "贵州大学", "14629382734"}};
-                Expert[] exp_selected;
                 try{
                     Collection<String> args = new ArrayList<>(30);
                     List<String> submission  = new ArrayList<>(30);
                     for(int r = 0;r < s_conditions.length;r ++){
                         submission.add(s_conditions[r] + " " + selection_condition_inputs[r].getText().replaceAll("\\s*",""));
                     }
-                    submission.add("biding_type " + Biding_type.getSelectedItem());
-                    submission.add("biding_method" + Biding_method.getSelectedItem());
-                    submission.add("industry_type" + industry_type.getSelectedItem());
-                    submission.add("organ_type" + organ_type.getSelectedItem());
+                    submission.add("biding_type " + (String)Biding_type.getSelectedItem());
+                    submission.add("biding_method " + (String)Biding_method.getSelectedItem());
+                    submission.add("industry_type " + (String)industry_type.getSelectedItem());
+                    submission.add("organ_type " + (String)organ_type.getSelectedItem());
                     submission.add("start_time " + biding_time_start_inputs[0].getText().replaceAll("\\s*","") + "/"
                             + biding_time_start_inputs[1].getText().replaceAll("\\s*","") + "/"
                             + biding_time_start_inputs[2].getText().replaceAll("\\s*","") + "/"
@@ -584,23 +583,37 @@ public class SelectingExp {
                             + biding_time_end_inputs[4].getText().replaceAll("\\s*","") + "/");
                     DefaultTableModel mkout = (DefaultTableModel) company_table.getModel();
                     for(int t = 0;t < company_table.getRowCount();t ++){
-                        String str_out = "Avoid_company_" + t + " " + (String)mkout.getValueAt(t,0) + " " + (String)mkout.getValueAt(t,1);
+                        String str_out = "Avoid_company_" + t + "/" + (String)mkout.getValueAt(t,0) + "/" + (String)mkout.getValueAt(t,1);
                         submission.add(str_out);
                     }
 
                     DefaultTableModel mk2out = (DefaultTableModel)conditions.getModel();
                     for(int g = 0;g < conditions.getRowCount();g ++){
-                        String st_out = "Exp_cond_" + g + " " + mk2out.getValueAt(g,0) + " " + mk2out.getValueAt(g,1) + " " + mk2out.getValueAt(g,2);
-                        
+                        String st_out = "Exp_cond_" + g + " " + mk2out.getValueAt(g,0) + "/" + mk2out.getValueAt(g,1) + "/" + mk2out.getValueAt(g,2);
+                        submission.add(st_out);
                     }
-
-
-
-                    Command Roll = new Command("submit",);
+                    Command Roll = new Command("submit",submission);
+                    SwingNovice.comOut.write(Roll.serialize());
                 }
                 catch(IOException ioe){
-
+                    System.out.println(ioe.getMessage());
                 }
+                try{
+                    Command roll_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    if(roll_res.getCmd().equals("Object")) {
+                        String res_str = String.join(" ",roll_res.getArgs());
+                        List<Expert> exp_res = JSON.parseArray(res_str,Expert.class);
+                        exp_selected = new Expert[exp_res.size()];
+                        for(int o = 0;o < exp_selected.length;o ++){
+                            exp_selected[o] = exp_res.get(o);
+                        }
+                    }
+                }
+                catch(InvalidCommandFormatException icfe){
+                    System.out.println(icfe.getMessage());
+                }
+
+
                 JCheckBox[] exp_checks = new JCheckBox[exp_selected.length];
                 JTextField[] exp_reason = new JTextField[exp_selected.length];
                 JPanel exps = new JPanel();
@@ -650,7 +663,22 @@ public class SelectingExp {
                 bs[0].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        //
+                        List<String> cmd_cfrm = new ArrayList<>(10);
+                        for(int j = 0 ;j < exp_checks.length;j ++){
+                            if(exp_checks[j].isSelected()){
+                                cmd_cfrm.add(exp_selected[j].getName() + "/" +
+                                        exp_selected[j].getCompany() + "/" +
+                                        exp_selected[j].getPhone() + "/" +
+                                        exp_reason[j].getText().replaceAll("\\s*",""));
+                            }
+                        }
+                        try{
+                            Command absent_exp = new Command("cfm_rolling",cmd_cfrm);
+                            SwingNovice.comOut.write(absent_exp.serialize());
+                        }
+                        catch(IOException ioe){
+                            System.out.println(ioe.getMessage());
+                        }
                     }
                 });
                 bs[1] = new JButton("打印抽签结果");
@@ -664,7 +692,13 @@ public class SelectingExp {
                 bs[2].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        //
+                        try{
+                            Command cancel = new Command("cancel");
+                            SwingNovice.comOut.write(cancel.serialize());
+                        }
+                        catch (IOException ioe){
+                            System.out.println(ioe.getMessage());
+                        }
                     }
                 });
                 JOptionPane.showOptionDialog(null, out_panel, "选择", 1, 3, null, bs, bs[0]);
@@ -732,37 +766,4 @@ public class SelectingExp {
 
         return jsp_outtermost;
     }
-
-//    public static boolean containsspace(JTextField jtx){
-//        String in = jtx.getText();
-//        for(int i = 0 ;i < in.length();i ++){
-//            if(in.charAt(i) == ' '){
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    public static boolean checkspaces(){
-//        boolean out = true;
-//        for(JTextField jtx:selection_condition_inputs){
-//            if(!containsspace(jtx)){
-//                out = false;
-//            }
-//        }
-//        for(JTextField jtx:biding_time_start_inputs){
-//            if(!containsspace(jtx)){
-//                out = false;
-//            }
-//        }
-//        for(JTextField jtx:biding_time_end_inputs){
-//            if(!containsspace(jtx)){
-//                out = false;
-//            }
-//        }
-//
-//        return out;
-//
-//
-//    }
 }

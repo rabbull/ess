@@ -20,7 +20,7 @@ import java.util.List;
 public class SwingNovice extends JPanel implements ClientInterface{
 
     public static String[] expertInfoItems = ExpertDAO.readableTitle;  //录入专家信息的表的labels
-    public static JTextField[] textFields = new JTextField[2];
+    public static JTextField[] textFields = new JTextField[expertInfoItems.length];
 
     public static JTabbedPane mainTabPane;
 

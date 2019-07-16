@@ -1,16 +1,18 @@
 //import com.sun.org.apache.xpath.internal.operations.Bool;
+import command.Command;
 import models.entities.Company;
 import models.entities.Expert;
 import models.entities.Profession;
 import org.apache.commons.math3.analysis.function.Exp;
+import org.omg.IOP.IOR;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 
 
 public class RegistrationPane {
@@ -52,8 +54,18 @@ public class RegistrationPane {
                 }
                 conformationString.append("\n 请确认上述信息是否无误 \n是否录入？");
                 int response = JOptionPane.showConfirmDialog(null, conformationString.toString(), "确认信息", JOptionPane.YES_NO_OPTION);
-                if (response != 0) {
-                    return;
+                if (response == 0) {
+                    try{
+                        List<String> reg_info = new ArrayList<>();
+                        for(int k = 0;k < SwingNovice.textFields.length;k ++){
+                            reg_info.add(SwingNovice.expertInfoItems[k] + " " + SwingNovice.textFields[k].getText().replaceAll("\\s*",""));
+                        }
+                        Command submit_reg = new Command("submit_reg",reg_info);
+                        SwingNovice.comOut.write(submit_reg.serialize());
+                    }
+                    catch (IOException ioe){
+                        System.out.println(ioe.getMessage());
+                    }
                 }
 
             }
