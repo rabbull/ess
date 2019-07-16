@@ -403,7 +403,7 @@ public class MainPane {
             public void actionPerformed(ActionEvent e) {
                 DefaultTableModel p_model = (DefaultTableModel) Proj_table.getModel();
                 int selrow = Proj_table.getSelectedRow();
-                Project p = new Project(p_model.getValueAt(selrow,0).toString(),p_model.getValueAt(selrow,1).toString(),Long.parseLong((String)p_model.getValueAt(selrow,2)),p_model.getValueAt(selrow,3).toString(),p_model.getValueAt(selrow,4).toString(),p_model.getValueAt(selrow,5).toString(),p_model.getValueAt(selrow,6).toString());
+                Project p = null; //ew Project(p_model.getValueAt(selrow,0).toString(),p_model.getValueAt(selrow,1).toString(),Long.parseLong((String)p_model.getValueAt(selrow,2)),p_model.getValueAt(selrow,3).toString(),p_model.getValueAt(selrow,4).toString(),p_model.getValueAt(selrow,5).toString(),p_model.getValueAt(selrow,6).toString());
 
 
 

@@ -21,5 +21,6 @@
 
     <mappers>
         <mapper resource="mappers/ProjectMapper.xml"/>
+        <mapper resource="mappers/LogMapper.xml"/>
     </mappers>
 </configuration>

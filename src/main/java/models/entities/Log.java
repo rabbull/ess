@@ -7,10 +7,20 @@ import java.util.Date;
 public class Log extends Model {
     private Date date;
     private String what;
+    private Integer project;
 
-    public Log(String what) {
+    public Log(Integer project, String what) {
+        this.project = project;
         this.date = new Date();
         this.what = what;
+    }
+
+    public Integer getProject() {
+        return project;
+    }
+
+    public void setProject(Integer project) {
+        this.project = project;
     }
 
     public Date getDate() {
