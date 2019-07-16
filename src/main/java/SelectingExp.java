@@ -653,7 +653,7 @@ public class SelectingExp {
                 bs[0].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        List<String> cmd_cfrm = new ArrayList<>(10);
+                        List<Sheet_absent_exps> cmd_cfrm = new ArrayList<>(10);
                         for(int j = 0 ;j < exp_checks.length;j ++){
                             if(exp_checks[j].isSelected()){
                                 cmd_cfrm.add(exp_selected[j].getName() + "/" +

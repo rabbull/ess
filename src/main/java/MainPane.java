@@ -1,7 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import command.exceptions.InvalidCommandFormatException;
 import common.Serializable;
-import duplicated.dao.ExpertDAO;
+import models.dao.ExpertDAO;
 import duplicated.dao.ProjectDAO;
 import command.Command;
 import javax.swing.*;
@@ -16,9 +16,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import command.Command;
-import duplicated.models.Company;
-import duplicated.models.Expert;
-import duplicated.models.Project;
+import models.entities.Company;
+import models.entities.Expert;
+import models.entities.Project;
 import org.apache.commons.math3.analysis.function.Exp;
 
 
@@ -71,9 +71,32 @@ public class MainPane {
                 expertInformation = new Object[out.size()][4];
                 for(int i = 0;i < out.size();i ++){
                     expertInformation[i][0] = out.get(i).getName();
-                    expertInformation[i][1] = out.get(i).getGender();
-                    expertInformation[i][2] = out.get(i).getPhone();
+                    expertInformation[i][1] = out.get(i).getSex();
+                    expertInformation[i][2] = out.get(i).getPhoneNumber();
                     expertInformation[i][3] = out.get(i).getCompany().getName();
+                }
+            }
+            else{
+                System.out.println("接收错误");
+            }
+        }
+        catch(InvalidCommandFormatException icfe){
+            System.out.println(icfe.fillInStackTrace());
+        }
+        Command get_companies = new Command("require_companies",Collections.singletonList("all"));
+        try {
+            SwingNovice.comOut.write(get_companies.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try {
+            Command js = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(js.getCmd().equals("Object")){
+                String processed = String.join(" ", js.getArgs());
+                List<Company> out = JSON.parseArray(processed,Company.class);
+                for(int i = 0;i < out.size();i ++){
+                    expertInformation[i][3] = out.get(i).getString();
                 }
             }
             else{
@@ -310,7 +333,7 @@ public class MainPane {
                 List<Project> pout = JSON.parseArray(processed,Project.class);
                 projectInformation = new Object[pout.size()][7];
                 for(int i = 0;i < pout.size();i ++){
-                    projectInformation[i][0] = pout.get(i).getCode();
+                    projectInformation[i][0] = pout.get(i).get;
                     projectInformation[i][1] = pout.get(i).getName();
                     projectInformation[i][2] = pout.get(i).getAmount();
                     projectInformation[i][3] = pout.get(i).getMethod();
