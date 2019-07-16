@@ -1,5 +1,7 @@
 package command.processors;
 
+import command.Command;
+
 public interface CommandProcessor {
-    public Object run(String[] args);
+    Command run(String[] args);
 }

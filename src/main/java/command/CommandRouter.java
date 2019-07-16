@@ -15,7 +15,7 @@ public class CommandRouter {
         commandProcessors = new HashMap<>();
     }
 
-    public Object resolve(Command command) throws CommandNotAcceptedException {
+    public Command resolve(Command command) throws CommandNotAcceptedException {
         String cmd = command.getCmd();
         String[] args = command.getArgs();
         if (!commandProcessors.containsKey(cmd)) {

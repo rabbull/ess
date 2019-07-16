@@ -1,4 +1,4 @@
 package mappers;
 
-public interface LogMapper {
+public interface LogMapper extends GetAllable {
 }

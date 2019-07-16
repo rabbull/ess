@@ -8,6 +8,7 @@ public class Invites extends Model {
     private Project project;
     private Expert expert;
     private String reason;
+    private Integer score;
 
     public Invites() {}
 
@@ -38,5 +39,13 @@ public class Invites extends Model {
 
     public void setExpert(Expert expert) {
         this.expert = expert;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }

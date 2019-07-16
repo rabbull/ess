@@ -28,7 +28,7 @@
         select * from main.Project where id=#{id};
     </select>
 
-    <select id="selectAllProjects" resultMap="ProjectMap">
-        select * from main.Project;
+    <select id="getAll" resultMap="ProjectMap">
+        select * from Project;
     </select>
 </mapper>
