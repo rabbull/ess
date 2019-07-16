@@ -10,15 +10,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.codemodel.internal.JOp;
 import command.Command;
 import command.exceptions.InvalidCommandFormatException;
-import deprecated.models.Expert;
+import models.entities.Expert;
 import models.entities.Profession;
 import models.entities.Project;
 
@@ -86,6 +85,10 @@ public class SelectingExp {
     public static List<Profession> maj_3 = new ArrayList<>();
 
     public static Expert[] exp_selected;
+
+    public static ArrayList<String> aux_pros;
+
+    public static ArrayList<String> main_pros;
 
     public static JComponent SelectingExDeliver(boolean isRerolling, Project p) {
         try{
@@ -388,19 +391,19 @@ public class SelectingExp {
         pro_1_box.add(new JLabel("拟抽取专业"));
         List<Profession> maj_1 = new ArrayList<>(20);
         for(Profession m:pro_chunks){
-            if(m.getFather().equals(null)){
+            if(m.getFather() == null){
                 maj_1.add(m);
             }
         }
         maj_1_m = new String[maj_1.size()];
         for(int l = 0;l < maj_1.size();l ++){
-            maj_1_m[l] = maj_1.get(l).getName();
+            maj_1_m[l] = maj_1.get(l).getCode() + "/" + maj_1.get(l).getName();
         }
         maj_1_main = new JComboBox<>(maj_1_m);
         maj_1_main.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (!maj_1_main.getSelectedItem().equals("")) {
+                if (!maj_1_main.getSelectedItem().equals("全部")) {
 
                     Profession selected = (Profession) maj_1_main.getSelectedItem();
                     for(Profession pros:pro_chunks){
@@ -409,7 +412,7 @@ public class SelectingExp {
                         }
                     }
                     for(int r = 0; r < maj_2.size();r ++){
-                        maj_2_m[r] = maj_2.get(r).getName();
+                        maj_2_m[r] = maj_2.get(r).getCode() + "/" + maj_2.get(r).getName();
                     }
                     maj_2_main.setVisible(true);
 
@@ -421,12 +424,12 @@ public class SelectingExp {
         });
         pro_1_box.add(maj_1_main);
 
-        maj_2_main = new JComboBox<>();
+        maj_2_main = new JComboBox<>(maj_2_m);
         maj_2_main.setVisible(false);
         maj_2_main.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (maj_2_main.getSelectedItem().equals("")) {
+                if (maj_2_main.getSelectedItem().equals("全部")) {
                     Profession selected = (Profession) maj_2_main.getSelectedItem();
                     for(Profession pros:pro_chunks){
                         if(pros.getFather().equals(selected)){
@@ -434,7 +437,7 @@ public class SelectingExp {
                         }
                     }
                     for(int r = 0; r < maj_3.size();r ++){
-                        maj_3_m[r] = maj_3.get(r).getName();
+                        maj_3_m[r] = maj_3.get(r).getCode() + "/" + maj_3.get(r).getName();
                     }
                     maj_3_main.setVisible(true);
                 } else {
@@ -458,7 +461,7 @@ public class SelectingExp {
         maj_1_aux.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (!maj_1_aux.getSelectedItem().equals("")) {
+                if (maj_1_aux.getSelectedItem().equals("全部")) {
                     Profession selected = (Profession) maj_1_aux.getSelectedItem();
                     for(Profession pros:pro_chunks){
                         if(pros.getFather().equals(selected)){
@@ -466,7 +469,7 @@ public class SelectingExp {
                         }
                     }
                     for(int r = 0; r < maj_2.size();r ++){
-                        maj_2_a[r] = maj_2.get(r).getName();
+                        maj_2_a[r] = maj_2.get(r).getCode() + maj_2.get(r).getName();
                     }
                     maj_2_aux.setVisible(true);
                 } else {
@@ -482,7 +485,7 @@ public class SelectingExp {
         maj_2_aux.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (!maj_2_aux.getSelectedItem().equals("")) {
+                if (maj_2_aux.getSelectedItem().equals("全部")) {
                     Profession selected = (Profession) maj_2_aux.getSelectedItem();
                     for(Profession pros:pro_chunks){
                         if(pros.getFather().equals(selected)){
@@ -490,7 +493,7 @@ public class SelectingExp {
                         }
                     }
                     for(int r = 0; r < maj_3.size();r ++){
-                        maj_3_a[r] = maj_3.get(r).getName();
+                        maj_3_a[r] = maj_3.get(r).getCode() + "/" + maj_3.get(r).getName();
                     }
                     maj_3_aux.setVisible(true);
                 } else {
@@ -500,7 +503,7 @@ public class SelectingExp {
         });
         pro_2_box.add(maj_2_aux);
 //        String[] maj_3 = {"全部","3级专业1","3级专业二","3级专业三"};
-        maj_3_aux = new JComboBox<>(maj_3_m);
+        maj_3_aux = new JComboBox<>(maj_3_a);
         maj_3_aux.setVisible(false);
         pro_2_box.add(maj_3_aux);
 
@@ -560,38 +563,26 @@ public class SelectingExp {
 
 //                String[][] exp_selected = {{"王八", "四川大学", "17883430983"}, {"小土豆", "贵州大学", "14629382734"}};
                 try{
-                    Collection<String> args = new ArrayList<>(30);
-                    List<String> submission  = new ArrayList<>(30);
-                    for(int r = 0;r < s_conditions.length;r ++){
-                        submission.add(s_conditions[r] + " " + selection_condition_inputs[r].getText().replaceAll("\\s*",""));
-                    }
-                    submission.add("biding_type " + (String)Biding_type.getSelectedItem());
-                    submission.add("biding_method " + (String)Biding_method.getSelectedItem());
-                    submission.add("industry_type " + (String)industry_type.getSelectedItem());
-                    submission.add("organ_type " + (String)organ_type.getSelectedItem());
-                    submission.add("start_time " + biding_time_start_inputs[0].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_start_inputs[1].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_start_inputs[2].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_start_inputs[3].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_start_inputs[4].getText().replaceAll("\\s*","") + "/");
-
-                    submission.add("end_time " + biding_time_end_inputs[0].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_end_inputs[1].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_end_inputs[2].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_end_inputs[3].getText().replaceAll("\\s*","") + "/"
-                            + biding_time_end_inputs[4].getText().replaceAll("\\s*","") + "/");
+                    List<String> company_sub  = new ArrayList<>(30);
+                    Sheet_selection subs;
                     DefaultTableModel mkout = (DefaultTableModel) company_table.getModel();
                     for(int t = 0;t < company_table.getRowCount();t ++){
-                        String str_out = "Avoid_company_" + t + "/" + (String)mkout.getValueAt(t,0) + "/" + (String)mkout.getValueAt(t,1);
-                        submission.add(str_out);
+                        String str_out = "Avoid_company" + "/" + (String)mkout.getValueAt(t,0) + "/" + (String)mkout.getValueAt(t,1);
+                        company_sub.add(str_out);
                     }
-
-                    DefaultTableModel mk2out = (DefaultTableModel)conditions.getModel();
-                    for(int g = 0;g < conditions.getRowCount();g ++){
-                        String st_out = "Exp_cond_" + g + " " + mk2out.getValueAt(g,0) + "/" + mk2out.getValueAt(g,1) + "/" + mk2out.getValueAt(g,2);
-                        submission.add(st_out);
-                    }
-                    Command Roll = new Command("submit",submission);
+                    Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
+                    Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
+                    subs = new Sheet_selection(selection_condition_inputs[0].getText().replaceAll("\\s*",""),
+                                            Long.parseLong(selection_condition_inputs[1].getText().replaceAll("\\s*","")),
+                                            selection_condition_inputs[2].getText().replaceAll("\\s*",""),
+                                            Long.parseLong(selection_condition_inputs[3].getText().replaceAll("\\s*","")),
+                                            selection_condition_inputs[4].getText().replaceAll("\\s*",""),
+                                            (String)Biding_type.getSelectedItem(),
+                                            (String)Biding_method.getSelectedItem(),
+                                            (String)industry_type.getSelectedItem(),
+                                            (String)organ_type.getSelectedItem(),
+                                            starting_date,ending_date,company_sub,main_pros,aux_pros);
+                    Command Roll = new Command("submit",Collections.singletonList(subs.toString()));
                     SwingNovice.comOut.write(Roll.serialize());
                 }
                 catch(IOException ioe){
@@ -649,8 +640,8 @@ public class SelectingExp {
                         }
                     });
                     temp.add(new JLabel(exp_selected[i].getName()));
-                    temp.add(new JLabel(exp_selected[i].getCompany().getName()));
-                    temp.add(new JLabel(exp_selected[i].getPhone()));
+                    temp.add(new JLabel(exp_selected[i].getSex().toString()));
+                    temp.add(new JLabel(exp_selected[i].getPhoneNumber()));
                     temp.add(exp_reason[i]);
                     temp.setBorder(new EtchedBorder());
                     exps.add(temp);
@@ -666,8 +657,8 @@ public class SelectingExp {
                         for(int j = 0 ;j < exp_checks.length;j ++){
                             if(exp_checks[j].isSelected()){
                                 cmd_cfrm.add(exp_selected[j].getName() + "/" +
-                                        exp_selected[j].getCompany() + "/" +
-                                        exp_selected[j].getPhone() + "/" +
+                                        exp_selected[j].getSex() + "/" +
+                                        exp_selected[j].getPhoneNumber() + "/" +
                                         exp_reason[j].getText().replaceAll("\\s*",""));
                             }
                         }
@@ -715,22 +706,43 @@ public class SelectingExp {
                 DefaultTableModel m = (DefaultTableModel) conditions.getModel();
                 List<Object> out_main = new ArrayList<Object>();
 
-                out_main.add(maj_1_main.getSelectedItem());
-                if(!maj_2_main.getSelectedItem().equals(null))
+                    out_main.add(maj_1_main.getSelectedItem());
+
                     out_main.add(maj_2_main.getSelectedItem());
-                if(!maj_3_main.getSelectedItem().equals(null))
+
                     out_main.add(maj_3_main.getSelectedItem());
                 Object[] new_row = new Object[3];
-                switch(out_main.size()){
-                    case 1:
-                        new_row[0] = out_main.get(0);
-                    case 2:
-                        new_row[0] = out_main.get(1);
-                    case 3:
-                        new_row[0] = out_main.get(2);
+                if(out_main.get(0).equals("全部")){
+                    new_row[0] = out_main.get(0);
+                    new_row[1] = 1;
+                    main_pros.add(((String)out_main.get(0)).split("/")[0]);
                 }
-                new_row[1] = out_main.size();
+                else if(out_main.get(1).equals("全部")){
+                    new_row[0] = out_main.get(1);
+                    new_row[1] = 2;
+                    main_pros.add(((String)out_main.get(1)).split("/")[0]);
+                }
+                else {
+                    new_row[0] = out_main.get(2);
+                    new_row[1] = 3;
+                    main_pros.add(((String) out_main.get(2)).split("/")[0]);
+                }
                 new_row[2] = total_personel.getText();
+
+                List<String> out_aux = new ArrayList<>();
+                out_aux.add((String) maj_1_aux.getSelectedItem());
+                out_aux.add((String) maj_2_aux.getSelectedItem());
+                out_aux.add((String) maj_3_aux.getSelectedItem());
+                if(out_aux.get(0).equals("全部")){
+                    aux_pros.add(out_aux.get(0).split("/")[0]);
+                }
+                else if(out_aux.get(1).equals("全部")){
+                    aux_pros.add(out_aux.get(1).split("/")[0]);
+                }
+                else {
+                    aux_pros.add(out_aux.get(2).split("/")[0]);
+                }
+
                 m.addRow(new_row);
                 conditions.setModel(m);
             }
@@ -745,6 +757,8 @@ public class SelectingExp {
                     JOptionPane.showMessageDialog(null,"暂未选择任何行");
                 }
                 m.removeRow(selrow);
+                aux_pros.remove(selrow);
+                main_pros.remove(selrow);
             }
         });
         final_btns.add(add_new_exps);
