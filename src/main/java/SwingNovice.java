@@ -1,8 +1,8 @@
-import deprecated.dao.ExpertDAO;
-import deprecated.models.Company;
-import deprecated.models.Expert;
-import deprecated.models.Profession;
-import deprecated.models.Project;
+
+import models.entities.Company;
+import models.entities.Expert;
+import models.entities.Profession;
+import models.entities.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SwingNovice extends JPanel implements ClientInterface {
 
-    public static String[] expertInfoItems = ExpertDAO.readableTitle;  //录入专家信息的表的labels
+    public static String[] expertInfoItems = {"姓名","性别","电话号码","公司"};  //录入专家信息的表的labels
     public static JTextField[] textFields = new JTextField[expertInfoItems.length];
 
     public static JTabbedPane mainTabPane;

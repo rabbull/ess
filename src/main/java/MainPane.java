@@ -1,4 +1,5 @@
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import command.exceptions.InvalidCommandFormatException;
 import common.Serializable;
 
@@ -11,7 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.CaretListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import command.Command;
@@ -19,6 +22,7 @@ import models.entities.Company;
 import models.entities.Expert;
 import models.entities.Profession;
 import models.entities.Project;
+import models.relations.Invites;
 import org.apache.commons.math3.analysis.function.Exp;
 
 
@@ -35,13 +39,17 @@ public class MainPane {
 
     public static Object[][] projectInformation;
 
-    public static Object[] expertTableTitles = {"姓名","性别","电话号码","公司"};
+    public static Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
 
-    public static String[] filterConditions = {"姓名","性别","电话号码","公司"};
+    public static String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
 
     public static Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
 
     public static List<Project> Proj_chunk;
+
+    public static Project p;
+
+    public static List<Expert> Exper_chunk;
 
     public static JComponent AdminPanelDeliver() {
         JPanel result = new JPanel(false);
@@ -69,12 +77,13 @@ public class MainPane {
             Command js = Command.getOneCommandFromInputStream(SwingNovice.comIn);
             if(js.getCmd().equals("Object")){
                 String processed = String.join(" ", js.getArgs());
-                List<Expert> out = JSON.parseArray(processed,Expert.class);
-                expertInformation = new Object[out.size()][4];
-                for(int i = 0;i < out.size();i ++){
-                    expertInformation[i][0] = out.get(i).getName();
-                    expertInformation[i][1] = out.get(i).getSex();
-                    expertInformation[i][2] = out.get(i).getPhoneNumber();
+                Exper_chunk = JSON.parseArray(processed,Expert.class);
+                expertInformation = new Object[Exper_chunk.size()][4];
+                for(int i = 0;i < Exper_chunk.size();i ++){
+                    expertInformation[i][0] = Exper_chunk.get(i).getId();
+                    expertInformation[i][1] = Exper_chunk.get(i).getName();
+                    expertInformation[i][2] = Exper_chunk.get(i).getSex();
+                    expertInformation[i][3] = Exper_chunk.get(i).getPhoneNumber();
 //                    expertInformation[i][3] = out.get(i).getCompany().getName();
                 }
             }
@@ -214,12 +223,95 @@ public class MainPane {
                 try{
                     DefaultTableModel model = (DefaultTableModel) expertTable.getModel();
                     int selrow = expertTable.getSelectedRow();
-                    Expert abs_exp = new Expert(model.getValueAt(selrow,0).toString(),model.getValueAt(selrow,1).toString().equals("男"),model.getValueAt(selrow,2).toString());
-                    Command absent_command = new Command("absent",Collections.singletonList(abs_exp.toString()));
+                    Integer IDout = new Integer(0);
+//                    Expert abs_exp = new Expert(model.getValueAt(selrow,0).toString(),model.getValueAt(selrow,1).toString().equals("男"),model.getValueAt(selrow,2).toString());
+                    for(Expert exp:Exper_chunk){
+                        if(exp.getId().equals(model.getValueAt(selrow,0))){
+                            IDout = exp.getId();
+                        }
+                    }
+                    Command absent_command = new Command("requestprobyexpnumber",Collections.singletonList(IDout.toString()));
                     SwingNovice.comOut.write(absent_command.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
+                }
+                try{
+                    Command proj_in = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    if(proj_in.getCmd().equals("Object")) {
+                        JPanel out_panel = new JPanel(new GridLayout(1,1));
+                        out_panel.setPreferredSize(new Dimension(400, 400));
+                        String proj_str = String.join(" ",proj_in.getArgs());
+                        List<Invites> invs = JSON.parseArray(proj_str,Invites.class);
+//                        ArrayList<Invites> invites = new ArrayList<>(10);
+//                        for(Invites inv:invs){
+//                            invites.add(inv);
+//                        }
+
+                        JCheckBox[] exp_checks = new JCheckBox[invs.size()];
+                        JTextField[] exp_reason = new JTextField[invs.size()];
+                        JPanel exps = new JPanel();
+                        exps.setLayout(new GridLayout(invs.size() + 1, 1));
+                        exps.setPreferredSize(new Dimension(600, 35 * (invs.size() + 1)));
+                        JScrollPane jsp_exps = new JScrollPane(exps);
+                        jsp_exps.setBorder(new TitledBorder("与专家相关的项目"));
+                        JPanel ids = new JPanel();
+                        ids.setLayout(new GridLayout(1, 5));
+                        ids.add(new JLabel(""));
+                        ids.add(new JLabel("姓名"));
+                        ids.add(new JLabel("单位"));
+                        ids.add(new JLabel("联系方式"));
+                        exps.add(ids);
+                        for (int i = 0; i < invs.size(); i++) {
+                            JPanel temp = new JPanel();
+                            temp.setLayout(new GridLayout(1, 5));
+                            exp_checks[i] = new JCheckBox();
+                            exp_checks[i].setVisible(false);
+                            exp_reason[i] = new JTextField();
+                            exp_reason[i].setVisible(true);
+                            exp_reason[i].setEnabled(true);
+                            JCheckBox check_temp = exp_checks[i];
+                            JTextField reason_temp = exp_reason[i];
+                            temp.add(exp_checks[i]);
+//                    exp_checks[i].addItemListener(new ItemListener() {
+//                        @Override
+//                        public void itemStateChanged(ItemEvent e) {
+//                            if (check_temp.isSelected()) {
+//                                reason_temp.setEnabled(true);
+//                            } else {
+//                                reason_temp.setEnabled(false);
+//                                reason_temp.setText("");
+//                            }
+//                        }
+//                    });
+                            temp.add(new JLabel(invs.get(i).getId().toString()));
+                            temp.add(new JLabel(invs.get(i).getProject().getName()));
+                            temp.add(exp_reason[i]);
+                            temp.setBorder(new EtchedBorder());
+                            exps.add(temp);
+                        }
+                        out_panel.add(jsp_exps);
+
+
+                        int response = JOptionPane.showConfirmDialog(null, out_panel);
+                        if(response != 0){
+                            try{
+                                List<String> out = new ArrayList<>(10);
+                                for(int o = 0;o < exp_reason.length;o ++){
+                                    invs.get(o).setReason(exp_reason[o].getText());
+                                    out.add(invs.get(o).getProject().getId() + "/" + invs.get(o).getReason());
+                                }
+                                Command submit_abs = new Command("submit_abs", out);
+                                SwingNovice.comOut.write(submit_abs.serialize());
+                            }
+                            catch(IOException ioe){
+                                System.out.println(ioe.getMessage());
+                            }
+                        }
+                    }
+                }
+                catch(InvalidCommandFormatException icfe){
+                    System.out.println(icfe.getMessage());
                 }
             }
         });
@@ -403,12 +495,18 @@ public class MainPane {
             public void actionPerformed(ActionEvent e) {
                 DefaultTableModel p_model = (DefaultTableModel) Proj_table.getModel();
                 int selrow = Proj_table.getSelectedRow();
-                Project p = null; //ew Project(p_model.getValueAt(selrow,0).toString(),p_model.getValueAt(selrow,1).toString(),Long.parseLong((String)p_model.getValueAt(selrow,2)),p_model.getValueAt(selrow,3).toString(),p_model.getValueAt(selrow,4).toString(),p_model.getValueAt(selrow,5).toString(),p_model.getValueAt(selrow,6).toString());
+//                Project p = new Project(p_model.getValueAt(selrow,0).toString(),p_model.getValueAt(selrow,1).toString(),Long.parseLong((String)p_model.getValueAt(selrow,2)),p_model.getValueAt(selrow,3).toString(),p_model.getValueAt(selrow,4).toString(),p_model.getValueAt(selrow,5).toString(),p_model.getValueAt(selrow,6).toString());
 
+                for(Project pr:Proj_chunk){
+                    if(pr.getId().equals((Integer)p_model.getValueAt(selrow,0))){
+                        p = pr;
+                        break;
+                    }
+                }
 
 
                 try{
-                    Command get_pro_exp = new Command("Get_proj_exp",Collections.singletonList(p.toString()));
+                    Command get_pro_exp = new Command("requestprojexpert",Collections.singletonList(p.getId().toString()));
                     SwingNovice.comOut.write(get_pro_exp.serialize());
                 }
                 catch(IOException ioe){
