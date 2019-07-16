@@ -20,6 +20,7 @@ import command.exceptions.InvalidCommandFormatException;
 import models.entities.Expert;
 import models.entities.Profession;
 import models.entities.Project;
+import models.relations.Invites;
 
 
 public class SelectingExp {
@@ -92,7 +93,7 @@ public class SelectingExp {
 
     public static JComponent SelectingExDeliver(boolean isRerolling, Project p) {
         try{
-            Command get_method_options = new Command("Get_method_options", Collections.singletonList("all"));
+            Command get_method_options = new Command("requestall BiddingMethod");
             SwingNovice.comOut.write(get_method_options.serialize());
         }
         catch(IOException ioe){
@@ -111,7 +112,7 @@ public class SelectingExp {
         }
 //---------------------------------------------------------
         try{
-            Command get_biding_options = new Command("Get_biding_options", Collections.singletonList("all"));
+            Command get_biding_options = new Command("requestall BiddingType");
             SwingNovice.comOut.write(get_biding_options.serialize());
         }
         catch(IOException ioe){
@@ -129,7 +130,7 @@ public class SelectingExp {
         }
 //----------------------------------------------------------------------------------
         try{
-            Command get_industry_options = new Command("Get_industry_options", Collections.singletonList("all"));
+            Command get_industry_options = new Command("requestall IndustryType");
             SwingNovice.comOut.write(get_industry_options.serialize());
         }
         catch(IOException ioe){
@@ -149,7 +150,7 @@ public class SelectingExp {
         //-----------------------------------------------------------------------
 
         try{
-            Command get_organ_options = new Command("Get_organ_options", Collections.singletonList("all"));
+            Command get_organ_options = new Command("requestall OrgType");
             SwingNovice.comOut.write(get_organ_options.serialize());
         }
         catch(IOException ioe){
@@ -592,10 +593,10 @@ public class SelectingExp {
                     Command roll_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
                     if(roll_res.getCmd().equals("Object")) {
                         String res_str = String.join(" ",roll_res.getArgs());
-                        List<Expert> exp_res = JSON.parseArray(res_str,Expert.class);
+                        List<Invites> exp_res = JSON.parseArray(res_str,Invites.class);
                         exp_selected = new Expert[exp_res.size()];
                         for(int o = 0;o < exp_selected.length;o ++){
-                            exp_selected[o] = exp_res.get(o);
+                            exp_selected[o] = exp_res.get(o).getExpert();
                         }
                     }
                 }
@@ -610,35 +611,36 @@ public class SelectingExp {
                 exps.setLayout(new GridLayout(exp_selected.length + 1, 1));
                 exps.setPreferredSize(new Dimension(600, 35 * (exp_selected.length + 1)));
                 JScrollPane jsp_exps = new JScrollPane(exps);
-                jsp_exps.setBorder(new TitledBorder("请勾选无法参加评标的专家并输入原因"));
+                jsp_exps.setBorder(new TitledBorder("抽取专家结果"));
                 JPanel ids = new JPanel();
                 ids.setLayout(new GridLayout(1, 5));
                 ids.add(new JLabel(""));
                 ids.add(new JLabel("姓名"));
                 ids.add(new JLabel("单位"));
                 ids.add(new JLabel("联系方式"));
-                ids.add(new JLabel("缺席原因"));
                 exps.add(ids);
                 for (int i = 0; i < exp_selected.length; i++) {
                     JPanel temp = new JPanel();
                     temp.setLayout(new GridLayout(1, 5));
                     exp_checks[i] = new JCheckBox();
+                    exp_checks[i].setVisible(false);
                     exp_reason[i] = new JTextField();
-                    exp_reason[i].setEnabled(false);
+                    exp_reason[i].setVisible(false);
+                    exp_reason[i].setEnabled(true);
                     JCheckBox check_temp = exp_checks[i];
                     JTextField reason_temp = exp_reason[i];
                     temp.add(exp_checks[i]);
-                    exp_checks[i].addItemListener(new ItemListener() {
-                        @Override
-                        public void itemStateChanged(ItemEvent e) {
-                            if (check_temp.isSelected()) {
-                                reason_temp.setEnabled(true);
-                            } else {
-                                reason_temp.setEnabled(false);
-                                reason_temp.setText("");
-                            }
-                        }
-                    });
+//                    exp_checks[i].addItemListener(new ItemListener() {
+//                        @Override
+//                        public void itemStateChanged(ItemEvent e) {
+//                            if (check_temp.isSelected()) {
+//                                reason_temp.setEnabled(true);
+//                            } else {
+//                                reason_temp.setEnabled(false);
+//                                reason_temp.setText("");
+//                            }
+//                        }
+//                    });
                     temp.add(new JLabel(exp_selected[i].getName()));
                     temp.add(new JLabel(exp_selected[i].getSex().toString()));
                     temp.add(new JLabel(exp_selected[i].getPhoneNumber()));
@@ -648,50 +650,8 @@ public class SelectingExp {
                 }
                 out_panel.add(jsp_exps);
 
-                JButton[] bs = new JButton[3];
-                bs[0] = new JButton("确定");
-                bs[0].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        List<Sheet_absent_exps> cmd_cfrm = new ArrayList<>(10);
-                        for(int j = 0 ;j < exp_checks.length;j ++){
-                            if(exp_checks[j].isSelected()){
-                                cmd_cfrm.add(exp_selected[j].getName() + "/" +
-                                        exp_selected[j].getSex() + "/" +
-                                        exp_selected[j].getPhoneNumber() + "/" +
-                                        exp_reason[j].getText().replaceAll("\\s*",""));
-                            }
-                        }
-                        try{
-                            Command absent_exp = new Command("cfm_rolling",cmd_cfrm);
-                            SwingNovice.comOut.write(absent_exp.serialize());
-                        }
-                        catch(IOException ioe){
-                            System.out.println(ioe.getMessage());
-                        }
-                    }
-                });
-                bs[1] = new JButton("打印抽签结果");
-                bs[1].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        //
-                    }
-                });
-                bs[2] = new JButton("取消");
-                bs[2].addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try{
-                            Command cancel = new Command("cancel");
-                            SwingNovice.comOut.write(cancel.serialize());
-                        }
-                        catch (IOException ioe){
-                            System.out.println(ioe.getMessage());
-                        }
-                    }
-                });
-                JOptionPane.showOptionDialog(null, out_panel, "选择", 1, 3, null, bs, bs[0]);
+
+                JOptionPane.showMessageDialog(null, out_panel);
 
             }
         });

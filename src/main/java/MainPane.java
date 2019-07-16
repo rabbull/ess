@@ -1,8 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import command.exceptions.InvalidCommandFormatException;
 import common.Serializable;
-import models.dao.ExpertDAO;
-import duplicated.dao.ProjectDAO;
+
 import command.Command;
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +17,7 @@ import javax.swing.table.TableModel;
 import command.Command;
 import models.entities.Company;
 import models.entities.Expert;
+import models.entities.Profession;
 import models.entities.Project;
 import org.apache.commons.math3.analysis.function.Exp;
 
@@ -35,11 +35,13 @@ public class MainPane {
 
     public static Object[][] projectInformation;
 
-    public static Object[] expertTableTitles = ExpertDAO.readableTitle;
+    public static Object[] expertTableTitles = {"姓名","性别","电话号码","公司"};
 
-    public static String[] filterConditions = ExpertDAO.readableTitle;
+    public static String[] filterConditions = {"姓名","性别","电话号码","公司"};
 
-    public static Object[] ProjectTableTitles = ProjectDAO.readableTitle;
+    public static Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
+
+    public static List<Project> Proj_chunk;
 
     public static JComponent AdminPanelDeliver() {
         JPanel result = new JPanel(false);
@@ -73,7 +75,7 @@ public class MainPane {
                     expertInformation[i][0] = out.get(i).getName();
                     expertInformation[i][1] = out.get(i).getSex();
                     expertInformation[i][2] = out.get(i).getPhoneNumber();
-                    expertInformation[i][3] = out.get(i).getCompany().getName();
+//                    expertInformation[i][3] = out.get(i).getCompany().getName();
                 }
             }
             else{
@@ -176,7 +178,7 @@ public class MainPane {
                 info.append("确认要移除这一条纪录么？");
                 int response = JOptionPane.showConfirmDialog(null, info.toString(), "详细信息", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (response == 0) {
-                    Expert exp2d = new Expert(model.getValueAt(selectedRow,0).toString(),model.getValueAt(selectedRow,1).toString(),model.getValueAt(selectedRow,2).toString(),new Company(model.getValueAt(selectedRow,3).toString()));
+                    Expert exp2d = new Expert(model.getValueAt(selectedRow,0).toString(),model.getValueAt(selectedRow,1).toString().equals("男"),model.getValueAt(selectedRow,2).toString());
                     model.removeRow(selectedRow);
                     expertTable.setModel(model);
 
@@ -212,7 +214,7 @@ public class MainPane {
                 try{
                     DefaultTableModel model = (DefaultTableModel) expertTable.getModel();
                     int selrow = expertTable.getSelectedRow();
-                    Expert abs_exp = new Expert(model.getValueAt(selrow,0).toString(),model.getValueAt(selrow,1).toString(),model.getValueAt(selrow,2).toString(),new Company(model.getValueAt(selrow,3).toString()));
+                    Expert abs_exp = new Expert(model.getValueAt(selrow,0).toString(),model.getValueAt(selrow,1).toString().equals("男"),model.getValueAt(selrow,2).toString());
                     Command absent_command = new Command("absent",Collections.singletonList(abs_exp.toString()));
                     SwingNovice.comOut.write(absent_command.serialize());
                 }
@@ -288,9 +290,8 @@ public class MainPane {
                         expertInformation = new Object[out.size()][4];
                         for(int i = 0;i < out.size();i ++){
                             expertInformation[i][0] = out.get(i).getName();
-                            expertInformation[i][1] = out.get(i).getGender();
-                            expertInformation[i][2] = out.get(i).getPhone();
-                            expertInformation[i][3] = out.get(i).getCompany().getName();
+                            expertInformation[i][1] = out.get(i).getSex();
+                            expertInformation[i][2] = out.get(i).getPhoneNumber();
                         }
                     }
                     DefaultTableModel or_model = (DefaultTableModel) expertTable.getModel();
@@ -330,16 +331,15 @@ public class MainPane {
             Command pjs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
             if(pjs.getCmd().equals("Object")){
                 String processed = String.join(" ", pjs.getArgs());
-                List<Project> pout = JSON.parseArray(processed,Project.class);
-                projectInformation = new Object[pout.size()][7];
-                for(int i = 0;i < pout.size();i ++){
-                    projectInformation[i][0] = pout.get(i).get;
-                    projectInformation[i][1] = pout.get(i).getName();
-                    projectInformation[i][2] = pout.get(i).getAmount();
-                    projectInformation[i][3] = pout.get(i).getMethod();
-                    projectInformation[i][4] = pout.get(i).getIndustry();
-                    projectInformation[i][5] = pout.get(i).getOrganizationForm();
-                    projectInformation[i][6] = pout.get(i).getCategory();
+                Proj_chunk = JSON.parseArray(processed,Project.class);
+                projectInformation = new Object[Proj_chunk.size()][6];
+                for(int i = 0;i < Proj_chunk.size();i ++){
+                    projectInformation[i][0] = Proj_chunk.get(i).getId();
+                    projectInformation[i][1] = Proj_chunk.get(i).getName();
+                    projectInformation[i][2] = Proj_chunk.get(i).getAmount();
+                    projectInformation[i][3] = Proj_chunk.get(i).getBiddingType();
+                    projectInformation[i][4] = Proj_chunk.get(i).getBiddingMethod();
+                    projectInformation[i][5] = Proj_chunk.get(i).getIndustryType();
                 }
             }
             else{
@@ -385,30 +385,12 @@ public class MainPane {
                 JScrollPane jsp_out = new JScrollPane(out_p);
                 out_p.setPreferredSize(new Dimension(400, 400));
                 out_p.add(new JLabel(out.toString()));
-
-                //根据数据判断还需要还需要抽取的人数
-                Project p = new Project(model.getValueAt(selected_r,0).toString(),model.getValueAt(selected_r,1).toString(),Long.parseLong((String)model.getValueAt(selected_r,2)),model.getValueAt(selected_r,3).toString(),model.getValueAt(selected_r,4).toString(),model.getValueAt(selected_r,5).toString(),model.getValueAt(selected_r,6).toString());
-                try{
-                    //发送请求返回一个models里面的project实例，含有需要的抽取专家人数。
-                    Command get_expect = new Command("Get_proj",Collections.singletonList(p.toString()));
-                    SwingNovice.comOut.write(get_expect.serialize());
-                }
-                catch(IOException ioe){
-                    System.out.println(ioe.fillInStackTrace());
-                }
-                try{
-                    Command expected_proj = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-                    if(expected_proj.getCmd().equals("Object")){
-                        String jsin = String.join(" ",expected_proj.getArgs());
-                        models.entities.Project expected_p = JSON.parseObject(jsin,models.entities.Project.class);
-                        out_p.add(SelectingExp.SelectingExDeliver(true,expected_p));
+                        for(Project proj:Proj_chunk) {
+                            if(proj.getId().equals((Integer) model.getValueAt(selected_r,0))) {
+                                out_p.add(SelectingExp.SelectingExDeliver(true, proj));
+                            }
+                        }
                         int response = JOptionPane.showConfirmDialog(null, jsp_out, "补充抽取", JOptionPane.YES_NO_OPTION);
-
-                    }
-                }
-                catch(InvalidCommandFormatException icfe){
-                    System.out.println(icfe.fillInStackTrace());
-                }
                 //传入pro然后判断逮抽取人数
             }
         });
