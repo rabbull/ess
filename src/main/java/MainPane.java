@@ -1,8 +1,7 @@
 import com.alibaba.fastjson.JSON;
 import command.exceptions.InvalidCommandFormatException;
-import common.Serializable;
-import duplicated.dao.ExpertDAO;
-import duplicated.dao.ProjectDAO;
+import deprecated.dao.ExpertDAO;
+import deprecated.dao.ProjectDAO;
 import command.Command;
 import javax.swing.*;
 import java.awt.*;
@@ -15,11 +14,10 @@ import java.util.List;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import command.Command;
-import duplicated.models.Company;
-import duplicated.models.Expert;
-import duplicated.models.Project;
-import org.apache.commons.math3.analysis.function.Exp;
+
+import deprecated.models.Company;
+import deprecated.models.Expert;
+import deprecated.models.Project;
 
 
 public class MainPane {

@@ -6,17 +6,23 @@ public class Profession extends Model {
     private Profession father;
     private Integer level;
     private String name;
+    private String code;
 
-    public Profession(Profession father, String name) {
+    public Profession(Profession father, String name, String code) {
         this.father = father;
-        this.level = father.level + 1;
+        if (father == null) {
+            this.level = 1;
+        }
         this.name = name;
+        this.code = code;
     }
 
-    public Profession(String name) {
-        this.father = null;
-        this.level = 0;
-        this.name = name;
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public Profession getFather() {

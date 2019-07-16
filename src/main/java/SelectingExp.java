@@ -16,10 +16,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.sun.codemodel.internal.JOp;
 import command.Command;
 import command.exceptions.InvalidCommandFormatException;
-import duplicated.models.Expert;
+import deprecated.models.Expert;
 import models.entities.Profession;
 import models.entities.Project;
 
@@ -525,7 +524,7 @@ public class SelectingExp {
         total_box.add(new JLabel("该条件拟抽取专家数"));
         total_box.add(total_personel);
         total_per_lable = new JLabel("尚未指定人数");
-        if(isRerolling) total_per_lable.setText("还需要" + (p.getExpectedExpertNumber() - p.getRealExpertNumber()) + "人");
+        if(isRerolling) total_per_lable.setText("还需要" + (p.getNumExpertExpected() - p.getNumExpertReal()) + "人");
         total_box.add(total_per_lable);
         maj_inputs.add(total_box);
 

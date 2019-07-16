@@ -1,23 +1,17 @@
-import duplicated.dao.ExpertDAO;
-import duplicated.dao.ProfessionDAO;
-import duplicated.dao.ProjectDAO;
-import duplicated.dao.CompanyDAO;
-import duplicated.database.Database;
-import duplicated.models.Company;
-import duplicated.models.Expert;
-import duplicated.models.Profession;
-import duplicated.models.Project;
+import deprecated.dao.ExpertDAO;
+import deprecated.models.Company;
+import deprecated.models.Expert;
+import deprecated.models.Profession;
+import deprecated.models.Project;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
-public class SwingNovice extends JPanel implements ClientInterface{
+public class SwingNovice extends JPanel implements ClientInterface {
 
     public static String[] expertInfoItems = ExpertDAO.readableTitle;  //录入专家信息的表的labels
     public static JTextField[] textFields = new JTextField[expertInfoItems.length];
@@ -61,7 +55,11 @@ public class SwingNovice extends JPanel implements ClientInterface{
         j.setSize(750, 600);
     }
     public void run(){
-        return;
+        JFrame j = new JFrame("专家信息管理系统");
+        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        j.add(new SwingNovice(), BorderLayout.CENTER);
+        j.setVisible(true);
+        j.setSize(750, 600);
     }
     public void registerSocket(Socket socket){
         com = socket;

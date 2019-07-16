@@ -26,17 +26,22 @@ public class Main {
                 serverSocket = new ServerSocket(port);
                 clientSocket = new Socket("127.0.0.1", port);
             } catch (Exception e) {
-                begin++;
+                port++;
                 continue;
             }
             break;
         } while (true);
-        final ClientInterface clientObj = new Client(clientSocket);
+
+        final ClientInterface clientObj = new SwingNovice();
+        clientObj.registerSocket(clientSocket);
         Thread clientThread = new Thread(clientObj);
+
         final Server serverObj = new Server(serverSocket);
         Thread serverThread = new Thread(serverObj);
+
         clientThread.start();
         serverThread.start();
+
         try {
             clientThread.join();
             serverThread.join();
