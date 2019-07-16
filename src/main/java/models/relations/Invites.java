@@ -9,6 +9,7 @@ public class Invites extends Model {
     private Project project;
     private Expert expert;
     private Boolean accepted;
+    private String reason;
 
     public Boolean getAccepted() {
         return accepted;
