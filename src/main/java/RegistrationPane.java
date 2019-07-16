@@ -1,7 +1,7 @@
 //import com.sun.org.apache.xpath.internal.operations.Bool;
-import models.Company;
-import models.Expert;
-import models.Profession;
+import models.entities.Company;
+import models.entities.Expert;
+import models.entities.Profession;
 import org.apache.commons.math3.analysis.function.Exp;
 
 import javax.swing.*;

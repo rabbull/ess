@@ -9,7 +9,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import com.alibaba.fastjson.JSON;
+import com.sun.codemodel.internal.JOp;
 import command.Command;
+import command.exceptions.InvalidCommandFormatException;
+import duplicated.models.Expert;
+import models.entities.Profession;
+import models.entities.Project;
 
 
 public class SelectingExp {
@@ -58,7 +70,105 @@ public class SelectingExp {
 
     public static JLabel total_per_lable;
 
-    public static JComponent SelectingExDeliver(boolean isRerolling) {
+    public static List<Profession> pro_chunks;
+
+    public static String[] maj_1_m = new String[100];
+
+    public static String[] maj_2_m = new String[100];
+
+    public static String[] maj_3_m = new String[100];
+
+    public static String[] maj_2_a = new String[100];
+
+    public static String[] maj_3_a = new String[100];
+
+    public static List<Profession> maj_2 = new ArrayList<>();
+
+    public static List<Profession> maj_3 = new ArrayList<>();
+
+
+
+    public static JComponent SelectingExDeliver(boolean isRerolling, Project p) {
+        try{
+            Command get_method_options = new Command("Get_method_options", Collections.singletonList("all"));
+            SwingNovice.comOut.write(get_method_options.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+
+        try{
+            Command methods = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(methods.getCmd().equals("Object")){
+                method_options = methods.getArgs();
+                //只需要一些字符串怎么办？？
+            }
+        }
+        catch (InvalidCommandFormatException e){
+            System.out.println(e.fillInStackTrace());
+        }
+//---------------------------------------------------------
+        try{
+            Command get_biding_options = new Command("Get_biding_options", Collections.singletonList("all"));
+            SwingNovice.comOut.write(get_biding_options.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try{
+            Command bidings = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(bidings.getCmd().equals("Object")){
+                Biding_options = bidings.getArgs();
+                //只需要一些字符串怎么办？？
+            }
+        }
+        catch (InvalidCommandFormatException e){
+            System.out.println(e.fillInStackTrace());
+        }
+//----------------------------------------------------------------------------------
+        try{
+            Command get_industry_options = new Command("Get_industry_options", Collections.singletonList("all"));
+            SwingNovice.comOut.write(get_industry_options.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try{
+            Command industrys = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(industrys.getCmd().equals("Object")){
+                industry_options = industrys.getArgs();
+                //只需要一些字符串怎么办？？
+            }
+        }
+        catch (InvalidCommandFormatException e){
+            System.out.println(e.fillInStackTrace());
+        }
+
+        //-----------------------------------------------------------------------
+
+        try{
+            Command get_organ_options = new Command("Get_organ_options", Collections.singletonList("all"));
+            SwingNovice.comOut.write(get_organ_options.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try{
+            Command organs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(organs.getCmd().equals("Object")){
+                organ_options = organs.getArgs();
+                //只需要一些字符串怎么办？？
+            }
+        }
+        catch (InvalidCommandFormatException e){
+            System.out.println(e.fillInStackTrace());
+        }
+
+
+//-------------------------------------------------------------------------------------
+
+
+
         JPanel result = new JPanel(false);
         result.setLayout(new GridLayout(3, 1));
         result.setPreferredSize(new Dimension(700, 1200));
@@ -256,16 +366,54 @@ public class SelectingExp {
         maj_selecting.setBorder(new TitledBorder("专家信息填写"));
         JPanel maj_inputs = new JPanel();
         maj_inputs.setLayout(new GridLayout(5, 1));
-
+//--------------------------------------------------------------------------------
+        try{
+            Command get_pros = new Command("Get_professions",Collections.singletonList("all"));
+            SwingNovice.comOut.write(get_pros.serialize());
+        }
+        catch (IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try{
+            Command pros = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            if(pros.getCmd().equals("Object")) {
+                String pros_str = String.join(" ",pros.getArgs());
+                pro_chunks = JSON.parseArray(pros_str,Profession.class);
+            }
+        }
+        catch (InvalidCommandFormatException icfe){
+            System.out.println(icfe.fillInStackTrace());
+        }
+//--------------------------------------------------------------------------------
         Box pro_1_box = Box.createHorizontalBox();
         pro_1_box.add(new JLabel("拟抽取专业"));
-        String[] maj_1 = {"全部", "一级专业1", "一级专业二", "一级专业三"};
-        maj_1_main = new JComboBox<>(maj_1);
+        List<Profession> maj_1 = new ArrayList<>(20);
+        for(Profession m:pro_chunks){
+            if(m.getFather().equals(null)){
+                maj_1.add(m);
+            }
+        }
+        maj_1_m = new String[maj_1.size()];
+        for(int l = 0;l < maj_1.size();l ++){
+            maj_1_m[l] = maj_1.get(l).getName();
+        }
+        maj_1_main = new JComboBox<>(maj_1_m);
         maj_1_main.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (maj_1_main.getSelectedIndex() != 0) {
+                if (!maj_1_main.getSelectedItem().equals("")) {
+
+                    Profession selected = (Profession) maj_1_main.getSelectedItem();
+                    for(Profession pros:pro_chunks){
+                        if(pros.getFather().equals(selected)){
+                            maj_2.add(pros);
+                        }
+                    }
+                    for(int r = 0; r < maj_2.size();r ++){
+                        maj_2_m[r] = maj_2.get(r).getName();
+                    }
                     maj_2_main.setVisible(true);
+
                 } else {
                     maj_2_main.setVisible(false);
                     maj_3_main.setVisible(false);
@@ -273,13 +421,22 @@ public class SelectingExp {
             }
         });
         pro_1_box.add(maj_1_main);
-        String[] maj_2 = {"全部", "2级专业1", "2级专业二", "2级专业三"};
-        maj_2_main = new JComboBox<>(maj_2);
+
+        maj_2_main = new JComboBox<>();
         maj_2_main.setVisible(false);
         maj_2_main.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (maj_2_main.getSelectedIndex() != 0) {
+                if (maj_2_main.getSelectedItem().equals("")) {
+                    Profession selected = (Profession) maj_2_main.getSelectedItem();
+                    for(Profession pros:pro_chunks){
+                        if(pros.getFather().equals(selected)){
+                            maj_3.add(pros);
+                        }
+                    }
+                    for(int r = 0; r < maj_3.size();r ++){
+                        maj_3_m[r] = maj_3.get(r).getName();
+                    }
                     maj_3_main.setVisible(true);
                 } else {
                     maj_3_main.setVisible(false);
@@ -287,19 +444,31 @@ public class SelectingExp {
             }
         });
         pro_1_box.add(maj_2_main);
-        String[] maj_3 = {"全部", "3级专业1", "3级专业二", "3级专业三"};
-        maj_3_main = new JComboBox<>(maj_3);
+        maj_3_main = new JComboBox<>(maj_3_m);
         maj_3_main.setVisible(false);
         pro_1_box.add(maj_3_main);
 
         Box pro_2_box = Box.createHorizontalBox();
         pro_2_box.add(new JLabel("替补专业"));
 //        String[] maj_1 = {"全部","一级专业1","一级专业二","一级专业三"};
-        maj_1_aux = new JComboBox<>(maj_1);
+        //maj_1.clear();
+        maj_2.clear();
+        maj_3.clear();
+
+        maj_1_aux = new JComboBox<>(maj_1_m);
         maj_1_aux.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (maj_1_aux.getSelectedIndex() != 0) {
+                if (!maj_1_aux.getSelectedItem().equals("")) {
+                    Profession selected = (Profession) maj_1_aux.getSelectedItem();
+                    for(Profession pros:pro_chunks){
+                        if(pros.getFather().equals(selected)){
+                            maj_2.add(pros);
+                        }
+                    }
+                    for(int r = 0; r < maj_2.size();r ++){
+                        maj_2_a[r] = maj_2.get(r).getName();
+                    }
                     maj_2_aux.setVisible(true);
                 } else {
                     maj_2_aux.setVisible(false);
@@ -309,12 +478,21 @@ public class SelectingExp {
         });
         pro_2_box.add(maj_1_aux);
 //        String[] maj_2 = {"全部","2级专业1","2级专业二","2级专业三"};
-        maj_2_aux = new JComboBox<>(maj_2);
+        maj_2_aux = new JComboBox<>(maj_2_a);
         maj_2_aux.setVisible(false);
         maj_2_aux.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (maj_2_aux.getSelectedIndex() != 0) {
+                if (!maj_2_aux.getSelectedItem().equals("")) {
+                    Profession selected = (Profession) maj_2_aux.getSelectedItem();
+                    for(Profession pros:pro_chunks){
+                        if(pros.getFather().equals(selected)){
+                            maj_3.add(pros);
+                        }
+                    }
+                    for(int r = 0; r < maj_3.size();r ++){
+                        maj_3_a[r] = maj_3.get(r).getName();
+                    }
                     maj_3_aux.setVisible(true);
                 } else {
                     maj_3_aux.setVisible(false);
@@ -323,7 +501,7 @@ public class SelectingExp {
         });
         pro_2_box.add(maj_2_aux);
 //        String[] maj_3 = {"全部","3级专业1","3级专业二","3级专业三"};
-        maj_3_aux = new JComboBox<>(maj_3);
+        maj_3_aux = new JComboBox<>(maj_3_m);
         maj_3_aux.setVisible(false);
         pro_2_box.add(maj_3_aux);
 
@@ -347,6 +525,7 @@ public class SelectingExp {
         total_box.add(new JLabel("该条件拟抽取专家数"));
         total_box.add(total_personel);
         total_per_lable = new JLabel("尚未指定人数");
+        if(isRerolling) total_per_lable.setText("还需要" + (p.getExpectedExpertNumber() - p.getRealExpertNumber()) + "人");
         total_box.add(total_per_lable);
         maj_inputs.add(total_box);
 
@@ -364,6 +543,9 @@ public class SelectingExp {
 
         Box final_btns = Box.createHorizontalBox();
         JScrollPane jsp_cond = new JScrollPane(conditions);
+
+
+
         JButton save = new JButton("保存已经填写的信息");
         JButton init = new JButton("开始抽签");
         init.addActionListener(new ActionListener() {
@@ -377,7 +559,48 @@ public class SelectingExp {
                 Rolling_process.append("（抽签信息）");
                 out_panel.add(Rolling_process);
 
-                String[][] exp_selected = {{"王八", "四川大学", "17883430983"}, {"小土豆", "贵州大学", "14629382734"}};
+//                String[][] exp_selected = {{"王八", "四川大学", "17883430983"}, {"小土豆", "贵州大学", "14629382734"}};
+                Expert[] exp_selected;
+                try{
+                    Collection<String> args = new ArrayList<>(30);
+                    List<String> submission  = new ArrayList<>(30);
+                    for(int r = 0;r < s_conditions.length;r ++){
+                        submission.add(s_conditions[r] + " " + selection_condition_inputs[r].getText().replaceAll("\\s*",""));
+                    }
+                    submission.add("biding_type " + Biding_type.getSelectedItem());
+                    submission.add("biding_method" + Biding_method.getSelectedItem());
+                    submission.add("industry_type" + industry_type.getSelectedItem());
+                    submission.add("organ_type" + organ_type.getSelectedItem());
+                    submission.add("start_time " + biding_time_start_inputs[0].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_start_inputs[1].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_start_inputs[2].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_start_inputs[3].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_start_inputs[4].getText().replaceAll("\\s*","") + "/");
+
+                    submission.add("end_time " + biding_time_end_inputs[0].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_end_inputs[1].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_end_inputs[2].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_end_inputs[3].getText().replaceAll("\\s*","") + "/"
+                            + biding_time_end_inputs[4].getText().replaceAll("\\s*","") + "/");
+                    DefaultTableModel mkout = (DefaultTableModel) company_table.getModel();
+                    for(int t = 0;t < company_table.getRowCount();t ++){
+                        String str_out = "Avoid_company_" + t + " " + (String)mkout.getValueAt(t,0) + " " + (String)mkout.getValueAt(t,1);
+                        submission.add(str_out);
+                    }
+
+                    DefaultTableModel mk2out = (DefaultTableModel)conditions.getModel();
+                    for(int g = 0;g < conditions.getRowCount();g ++){
+                        String st_out = "Exp_cond_" + g + " " + mk2out.getValueAt(g,0) + " " + mk2out.getValueAt(g,1) + " " + mk2out.getValueAt(g,2);
+                        
+                    }
+
+
+
+                    Command Roll = new Command("submit",);
+                }
+                catch(IOException ioe){
+
+                }
                 JCheckBox[] exp_checks = new JCheckBox[exp_selected.length];
                 JTextField[] exp_reason = new JTextField[exp_selected.length];
                 JPanel exps = new JPanel();
@@ -413,9 +636,9 @@ public class SelectingExp {
                             }
                         }
                     });
-                    temp.add(new JLabel(exp_selected[i][0]));
-                    temp.add(new JLabel(exp_selected[i][1]));
-                    temp.add(new JLabel(exp_selected[i][2]));
+                    temp.add(new JLabel(exp_selected[i].getName()));
+                    temp.add(new JLabel(exp_selected[i].getCompany().getName()));
+                    temp.add(new JLabel(exp_selected[i].getPhone()));
                     temp.add(exp_reason[i]);
                     temp.setBorder(new EtchedBorder());
                     exps.add(temp);
@@ -449,7 +672,48 @@ public class SelectingExp {
             }
         });
         JButton add_new_exps = new JButton("添加条件");
+        add_new_exps.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(maj_1_main.getSelectedItem().equals(null) || maj_1_aux.getSelectedItem().equals(null)  || total_personel.getText().equals("")){
+                    JOptionPane.showMessageDialog(null,"信息尚未完整");
+                    return;
+                }
+                DefaultTableModel m = (DefaultTableModel) conditions.getModel();
+                List<Object> out_main = new ArrayList<Object>();
+
+                out_main.add(maj_1_main.getSelectedItem());
+                if(!maj_2_main.getSelectedItem().equals(null))
+                    out_main.add(maj_2_main.getSelectedItem());
+                if(!maj_3_main.getSelectedItem().equals(null))
+                    out_main.add(maj_3_main.getSelectedItem());
+                Object[] new_row = new Object[3];
+                switch(out_main.size()){
+                    case 1:
+                        new_row[0] = out_main.get(0);
+                    case 2:
+                        new_row[0] = out_main.get(1);
+                    case 3:
+                        new_row[0] = out_main.get(2);
+                }
+                new_row[1] = out_main.size();
+                new_row[2] = total_personel.getText();
+                m.addRow(new_row);
+                conditions.setModel(m);
+            }
+        });
         JButton del_exps = new JButton("删除条件");
+        del_exps.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DefaultTableModel m = (DefaultTableModel) conditions.getModel();
+                int selrow = conditions.getSelectedRow();
+                if(selrow == -1){
+                    JOptionPane.showMessageDialog(null,"暂未选择任何行");
+                }
+                m.removeRow(selrow);
+            }
+        });
         final_btns.add(add_new_exps);
         final_btns.add(del_exps);
         final_btns.add(save);
@@ -459,7 +723,8 @@ public class SelectingExp {
         maj_selecting.add(maj_inputs);
         maj_selecting.add(jsp_cond);
 
-        if (isRerolling) {
+        //若重新抽取则只需要返回专业选取界面
+        if(isRerolling){
             return maj_selecting;
         }
 
@@ -467,4 +732,37 @@ public class SelectingExp {
 
         return jsp_outtermost;
     }
+
+//    public static boolean containsspace(JTextField jtx){
+//        String in = jtx.getText();
+//        for(int i = 0 ;i < in.length();i ++){
+//            if(in.charAt(i) == ' '){
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//    public static boolean checkspaces(){
+//        boolean out = true;
+//        for(JTextField jtx:selection_condition_inputs){
+//            if(!containsspace(jtx)){
+//                out = false;
+//            }
+//        }
+//        for(JTextField jtx:biding_time_start_inputs){
+//            if(!containsspace(jtx)){
+//                out = false;
+//            }
+//        }
+//        for(JTextField jtx:biding_time_end_inputs){
+//            if(!containsspace(jtx)){
+//                out = false;
+//            }
+//        }
+//
+//        return out;
+//
+//
+//    }
 }

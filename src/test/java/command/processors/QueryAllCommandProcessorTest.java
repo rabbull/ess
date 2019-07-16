@@ -1,11 +1,11 @@
 package command.processors;
 
 //import com.sun.imageio.spi.RAFImageOutputStreamSpi;
-import dao.DAORouter;
-import dao.ExpertDAO;
-import dao.ProjectDAO;
-import dao.exceptions.DAOAlreadyRegisteredException;
-import database.Database;
+import duplicated.dao.DAORouter;
+import duplicated.dao.ExpertDAO;
+import duplicated.dao.ProjectDAO;
+import duplicated.dao.exceptions.DAOAlreadyRegisteredException;
+import duplicated.database.Database;
 import org.junit.Before;
 import org.junit.Test;
 

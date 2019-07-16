@@ -1,12 +1,12 @@
-import dao.ExpertDAO;
-import dao.ProfessionDAO;
-import dao.ProjectDAO;
-import dao.CompanyDAO;
-import database.Database;
-import models.Company;
-import models.Expert;
-import models.Profession;
-import models.Project;
+import duplicated.dao.ExpertDAO;
+import duplicated.dao.ProfessionDAO;
+import duplicated.dao.ProjectDAO;
+import duplicated.dao.CompanyDAO;
+import duplicated.database.Database;
+import duplicated.models.Company;
+import duplicated.models.Expert;
+import duplicated.models.Profession;
+import duplicated.models.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class SwingNovice extends JPanel implements ClientInterface{
 
-    public static String[] expertInfoItems = {"asd","asdasd"};  //录入专家信息的表的labels
+    public static String[] expertInfoItems = ExpertDAO.readableTitle;  //录入专家信息的表的labels
     public static JTextField[] textFields = new JTextField[2];
 
     public static JTabbedPane mainTabPane;
@@ -47,7 +47,7 @@ public class SwingNovice extends JPanel implements ClientInterface{
         setVisible(true);
 
         mainTabPane.addTab("主界面", MainPane.AdminPanelDeliver());
-        mainTabPane.addTab("抽取专家信息", SelectingExp.SelectingExDeliver(false));
+        mainTabPane.addTab("抽取专家信息", SelectingExp.SelectingExDeliver(false,null));
         mainTabPane.addTab("注册专家信息", RegistrationPane.RegistrationPanelDeliver());
 
         this.add(mainTabPane, BorderLayout.CENTER);
