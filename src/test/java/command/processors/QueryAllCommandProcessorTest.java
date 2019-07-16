@@ -1,6 +1,6 @@
 package command.processors;
 
-import com.sun.imageio.spi.RAFImageOutputStreamSpi;
+//import com.sun.imageio.spi.RAFImageOutputStreamSpi;
 import dao.DAORouter;
 import dao.ExpertDAO;
 import dao.ProjectDAO;
