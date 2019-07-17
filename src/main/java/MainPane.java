@@ -20,14 +20,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import command.Command;
-import models.entities.Company;
 import models.entities.Expert;
-import models.entities.Profession;
 import models.entities.Project;
 import models.relations.Invites;
-import org.apache.commons.math3.analysis.function.Exp;
-import org.graalvm.compiler.lir.LIRInstruction;
 
 
 public class MainPane extends JPanel{
