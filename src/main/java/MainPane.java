@@ -6,6 +6,9 @@ import common.Serializable;
 import command.Command;
 import javax.swing.*;
 import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.*;
 import java.util.Collections;
 import java.awt.event.ActionEvent;
@@ -17,43 +20,46 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import command.Command;
-import models.entities.Company;
 import models.entities.Expert;
-import models.entities.Profession;
 import models.entities.Project;
 import models.relations.Invites;
-import org.apache.commons.math3.analysis.function.Exp;
 
 
-public class MainPane {
+public class MainPane extends JPanel{
 
-    public static Dimension buttonSize = new Dimension(150, 50);
+    public Dimension buttonSize = new Dimension(150, 50);
 
 
 //    public static Object[][] expertInformation = {{"asdasd", "asdawr", "asdarsafwfe", "asdarsr", "asdawdsd", "adwsad", "adsaw", "asdawd"}, {"1231231", "qwe2w2wrawe", "asdqwrw", "aef3efw", "asadwd", "asdawds", "asdawsa", "asdawd"}};
 
-    public static Object[][] expertInformation;
+    private Object[][] expertInformation;
 
-//    public static Object[][] projectInformation = {{"1000", "asd", "qwdq"}, {"qwd", "asd", "asd"}};
+//    private static Object[][] projectInformation = {{"1000", "asd", "qwdq"}, {"qwd", "asd", "asd"}};
 
-    public static Object[][] projectInformation;
+    private Object[][] projectInformation;
 
-    public static Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
+    private Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
 
-    public static String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
+    private String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
 
-    public static Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
+    private Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
 
-    public static List<Project> Proj_chunk;
+    private List<Project> Proj_chunk;
 
-    public static Project p;
+    private Project p;
 
-    public static List<Expert> Exper_chunk;
+    private List<Expert> Exper_chunk;
 
-    public static JComponent AdminPanelDeliver() {
-        JPanel result = new JPanel(false);
-        result.setLayout(new GridLayout(2, 2, 6, 6));
+    private DataInputStream comIn;
+
+    private DataOutputStream comOut;
+
+    public  MainPane(DataInputStream com1, DataOutputStream com2) {
+        this.comIn = com1;
+        this.comOut = com2;
+        this.setLayout(new GridLayout(2,2,6,6));
+//        JPanel result = new JPanel(false);
+//        result.setLayout(new GridLayout(2, 2, 6, 6));
 
         Box box_1 = Box.createVerticalBox();
         box_1.add(new JLabel("专家数据库"));
@@ -63,61 +69,7 @@ public class MainPane {
         m.setRowCount(0);
         m.setColumnIdentifiers(expertTableTitles);
 
-        //向后段索取需要的专家数据
-        List<String> clargs  = new ArrayList<>();
-        clargs.add("all");
-        Command require_all_exp = new Command("require_exp",clargs);
-        try {
-            SwingNovice.comOut.write(require_all_exp.serialize());
-        }
-        catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
-        }
-        try {
-            Command js = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-            if(js.getCmd().equals("Object")){
-                String processed = String.join(" ", js.getArgs());
-                Exper_chunk = JSON.parseArray(processed,Expert.class);
-                expertInformation = new Object[Exper_chunk.size()][4];
-                for(int i = 0;i < Exper_chunk.size();i ++){
-                    expertInformation[i][0] = Exper_chunk.get(i).getId();
-                    expertInformation[i][1] = Exper_chunk.get(i).getName();
-                    expertInformation[i][2] = Exper_chunk.get(i).getSex();
-                    expertInformation[i][3] = Exper_chunk.get(i).getPhoneNumber();
-//                    expertInformation[i][3] = out.get(i).getCompany().getName();
-                }
-            }
-            else{
-                System.out.println("接收错误");
-            }
-        }
-        catch(InvalidCommandFormatException icfe){
-            System.out.println(icfe.fillInStackTrace());
-        }
-        Command get_companies = new Command("require_companies",Collections.singletonList("all"));
-        try {
-            SwingNovice.comOut.write(get_companies.serialize());
-        }
-        catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
-        }
-        try {
-            Command js = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-            if(js.getCmd().equals("Object")){
-                String processed = String.join(" ", js.getArgs());
-                List<Company> out = JSON.parseArray(processed,Company.class);
-                for(int i = 0;i < out.size();i ++){
-                    expertInformation[i][3] = out.get(i).getString();
-                }
-            }
-            else{
-                System.out.println("接收错误");
-            }
-        }
-        catch(InvalidCommandFormatException icfe){
-            System.out.println(icfe.fillInStackTrace());
-        }
-
+        this.get_table_data();
 
         for (Object[] exp : expertInformation) {
             m.addRow(exp);
@@ -131,7 +83,8 @@ public class MainPane {
         jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         jsp.setPreferredSize(new Dimension(500, 400));
         box_1.add(jsp);
-        result.add(box_1);
+//        result.add(box_1);
+        this.add(box_1);
 
         JPanel Table_man = new JPanel();
         Table_man.setLayout(new GridLayout(3, 1));
@@ -194,13 +147,13 @@ public class MainPane {
                     Command del_exp = new Command("delete",Collections.singletonList(exp2d.toString()));
                     Command del_suc = new Command("");
                     try {
-                        SwingNovice.comOut.write(del_exp.serialize());
+                        comOut.write(del_exp.serialize());
                     }
                     catch(IOException ioe){
                         System.out.println(ioe.fillInStackTrace());
                     }
                     try {
-                        del_suc = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                        del_suc = Command.getOneCommandFromInputStream(comIn);
                     }
                     catch (InvalidCommandFormatException icfe){
                         System.out.println(icfe.fillInStackTrace());
@@ -231,13 +184,13 @@ public class MainPane {
                         }
                     }
                     Command absent_command = new Command("requestprobyexpnumber",Collections.singletonList(IDout.toString()));
-                    SwingNovice.comOut.write(absent_command.serialize());
+                    comOut.write(absent_command.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
                 try{
-                    Command proj_in = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command proj_in = Command.getOneCommandFromInputStream(comIn);
                     if(proj_in.getCmd().equals("Object")) {
                         JPanel out_panel = new JPanel(new GridLayout(1,1));
                         out_panel.setPreferredSize(new Dimension(400, 400));
@@ -298,11 +251,11 @@ public class MainPane {
                             try{
                                 List<String> out = new ArrayList<>(10);
                                 for(int o = 0;o < exp_reason.length;o ++){
-                                    invs.get(o).setReason(exp_reason[o].getText());
+                                    invs.get(o).setReason(exp_reason[o].getText().replaceAll("\\s*",""));
                                     out.add(invs.get(o).getProject().getId() + "/" + invs.get(o).getReason());
                                 }
                                 Command submit_abs = new Command("submit_abs", out);
-                                SwingNovice.comOut.write(submit_abs.serialize());
+                                comOut.write(submit_abs.serialize());
                             }
                             catch(IOException ioe){
                                 System.out.println(ioe.getMessage());
@@ -368,14 +321,14 @@ public class MainPane {
                 Command sear = new Command("search " + search_type + " " + search_text );
 
                 try {
-                    SwingNovice.comOut.write(sear.serialize());
+                    comOut.write(sear.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
 
                 try{
-                    Command search_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command search_res = Command.getOneCommandFromInputStream(comIn);
                     if(search_res.getCmd().equals("Object")){
                         String processed = String.join(" ", search_res.getArgs());
                         List<Expert> out = JSON.parseArray(processed,Expert.class);
@@ -402,45 +355,14 @@ public class MainPane {
         Table_man.add(Filter);
         Table_man.add(init_search);
 
-        result.add(Table_man);
+//        result.add(Table_man);
+        this.add(Table_man);
 
         Box Existing_proj = Box.createVerticalBox();
         Existing_proj.add(new JLabel("项目列表"));
         JTable Proj_table = new JTable();
         DefaultTableModel m2 = (DefaultTableModel) Proj_table.getModel();
         m2.setColumnIdentifiers(ProjectTableTitles);
-        //导入数据 倒入项目信息
-        List<String> poargs  = new ArrayList<String>();
-        poargs.add("all");
-        Command require_all_proj = new Command("require_proj",poargs);
-        try {
-            SwingNovice.comOut.write(require_all_proj.serialize());
-        }
-        catch(IOException ioe){
-            System.out.println(ioe.fillInStackTrace());
-        }
-        try {
-            Command pjs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-            if(pjs.getCmd().equals("Object")){
-                String processed = String.join(" ", pjs.getArgs());
-                Proj_chunk = JSON.parseArray(processed,Project.class);
-                projectInformation = new Object[Proj_chunk.size()][6];
-                for(int i = 0;i < Proj_chunk.size();i ++){
-                    projectInformation[i][0] = Proj_chunk.get(i).getId();
-                    projectInformation[i][1] = Proj_chunk.get(i).getName();
-                    projectInformation[i][2] = Proj_chunk.get(i).getAmount();
-                    projectInformation[i][3] = Proj_chunk.get(i).getBiddingType();
-                    projectInformation[i][4] = Proj_chunk.get(i).getBiddingMethod();
-                    projectInformation[i][5] = Proj_chunk.get(i).getIndustryType();
-                }
-            }
-            else{
-                System.out.println("接收错误");
-            }
-        }
-        catch(InvalidCommandFormatException icfe){
-            System.out.println(icfe.fillInStackTrace());
-        }
 
         for (int i = 0; i < projectInformation.length; i++) {
             m2.addRow(projectInformation[i]);
@@ -450,15 +372,31 @@ public class MainPane {
 
         JScrollPane jsp2 = new JScrollPane(Proj_table);
         Existing_proj.add(jsp2);
-        result.add(Existing_proj);
+//        result.add(Existing_proj);
+        this.add(Existing_proj);
 
         JPanel btns2 = new JPanel();
         btns2.setBorder(new TitledBorder("项目操作"));
         btns2.setLayout(new GridLayout(3, 1));
-        JLabel invisible = new JLabel("");
-        invisible.setPreferredSize(new Dimension(150, 50));
-        invisible.setVisible(false);
-        btns2.add(invisible);
+        JButton update = new JButton("刷新专家与项目表单");
+        update.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DefaultTableModel exp_model = new DefaultTableModel();
+                DefaultTableModel proj_model = new DefaultTableModel();
+                get_table_data();
+                for (int i = 0; i < projectInformation.length; i++) {
+                    exp_model.addRow(projectInformation[i]);
+                }
+                for (Object[] exp : expertInformation) {
+                    proj_model.addRow(exp);
+                }
+                expertTable.setModel(exp_model);
+                Proj_table.setModel(proj_model);
+                JOptionPane.showMessageDialog(null,"刷新成功");
+            }
+        });
+        btns2.add(update);
 
         JButton Complement_Rolling = new JButton("对当前项目补充抽取人员");
         Complement_Rolling.addActionListener(new ActionListener() {
@@ -479,7 +417,9 @@ public class MainPane {
                 out_p.add(new JLabel(out.toString()));
                         for(Project proj:Proj_chunk) {
                             if(proj.getId().equals((Integer) model.getValueAt(selected_r,0))) {
-                                out_p.add(SelectingExp.SelectingExDeliver(true, proj));
+//                                String[]
+                                //如何补抽
+//                                out_p.add();
                             }
                         }
                         int response = JOptionPane.showConfirmDialog(null, jsp_out, "补充抽取", JOptionPane.YES_NO_OPTION);
@@ -503,18 +443,16 @@ public class MainPane {
                         break;
                     }
                 }
-
-
                 try{
                     Command get_pro_exp = new Command("requestprojexpert",Collections.singletonList(p.getId().toString()));
-                    SwingNovice.comOut.write(get_pro_exp.serialize());
+                    comOut.write(get_pro_exp.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
                 String[] exp_namelist = new String[1];
                 try{
-                    Command exps = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command exps = Command.getOneCommandFromInputStream(comIn);
                     if(exps.getCmd().equals("Object")){
                         String exps_str = String.join(" ",exps.getArgs());
                         List<Expert> experts = JSON.parseArray(exps_str,Expert.class);
@@ -554,7 +492,7 @@ public class MainPane {
                             grades.add(exp_namelist[k] + " " + score_input[k]);
                         }
                         Command submit_grades = new Command("Submit",grades);
-                        SwingNovice.comOut.write(submit_grades.serialize());
+                        comOut.write(submit_grades.serialize());
                     }
                     catch (IOException ioe){
                         System.out.println(ioe.fillInStackTrace());
@@ -565,7 +503,76 @@ public class MainPane {
         });
         scoring.setPreferredSize(new Dimension(150, 50));
         btns2.add(scoring);
-        result.add(btns2);
-        return result;
+//        result.add(btns2);
+        this.add(btns2);
+//        return result;
+//        super(result);
+    }
+    public void get_table_data(){
+        //向后段索取需要的专家数据
+        List<String> clargs  = new ArrayList<>();
+        clargs.add("all");
+        Command require_all_exp = new Command("require_exp",clargs);
+        try {
+            comOut.write(require_all_exp.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try {
+            Command js = Command.getOneCommandFromInputStream(comIn);
+            if(js.getCmd().equals("Object")){
+                String processed = String.join(" ", js.getArgs());
+                Exper_chunk = JSON.parseArray(processed,Expert.class);
+                expertInformation = new Object[Exper_chunk.size()][4];
+                for(int i = 0;i < Exper_chunk.size();i ++){
+                    expertInformation[i][0] = Exper_chunk.get(i).getId();
+                    expertInformation[i][1] = Exper_chunk.get(i).getName();
+                    expertInformation[i][2] = Exper_chunk.get(i).getSex();
+                    expertInformation[i][3] = Exper_chunk.get(i).getPhoneNumber();
+//                    expertInformation[i][3] = out.get(i).getCompany().getName();
+                }
+            }
+            else{
+                System.out.println("接收错误");
+            }
+        }
+        catch(InvalidCommandFormatException icfe){
+            System.out.println(icfe.fillInStackTrace());
+        }
+
+        //导入数据 倒入项目信息
+        List<String> poargs  = new ArrayList<String>();
+        poargs.add("all");
+        Command require_all_proj = new Command("require_proj",poargs);
+        try {
+            comOut.write(require_all_proj.serialize());
+        }
+        catch(IOException ioe){
+            System.out.println(ioe.fillInStackTrace());
+        }
+        try {
+            Command pjs = Command.getOneCommandFromInputStream(comIn);
+            if(pjs.getCmd().equals("Object")){
+                String processed = String.join(" ", pjs.getArgs());
+                Proj_chunk = JSON.parseArray(processed,Project.class);
+                projectInformation = new Object[Proj_chunk.size()][6];
+                for(int i = 0;i < Proj_chunk.size();i ++){
+                    projectInformation[i][0] = Proj_chunk.get(i).getId();
+                    projectInformation[i][1] = Proj_chunk.get(i).getName();
+                    projectInformation[i][2] = Proj_chunk.get(i).getAmount();
+                    projectInformation[i][3] = Proj_chunk.get(i).getBiddingType();
+                    projectInformation[i][4] = Proj_chunk.get(i).getBiddingMethod();
+                    projectInformation[i][5] = Proj_chunk.get(i).getIndustryType();
+                }
+            }
+            else{
+                System.out.println("接收错误");
+            }
+        }
+        catch(InvalidCommandFormatException icfe){
+            System.out.println(icfe.fillInStackTrace());
+        }
+
     }
 }

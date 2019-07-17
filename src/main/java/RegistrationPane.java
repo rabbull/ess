@@ -10,46 +10,61 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class RegistrationPane {
-    public static JComponent RegistrationPanelDeliver() {
+public class RegistrationPane extends JPanel{
+    private   String[] expertInfoItems = {"姓名","性别","电话号码","公司"};  //录入专家信息的表的labels
+
+    private   JTextField[] textFields = new JTextField[expertInfoItems.length];
+
+    private DataInputStream comIn;
+
+    private DataOutputStream comOut;
+
+    public  RegistrationPane(DataInputStream com1,DataOutputStream com2) {
+        this.comIn = com1;
+        this.comOut = com2;
+        
         Box jresult = Box.createVerticalBox();
-        JLabel[] labels = new JLabel[SwingNovice.expertInfoItems.length];
-        Box[] boxes = new Box[SwingNovice.expertInfoItems.length];
+        JLabel[] labels = new JLabel[expertInfoItems.length];
+        Box[] boxes = new Box[expertInfoItems.length];
         JPanel Forum = new JPanel(false);
 
-        for (int i = 0; i < SwingNovice.expertInfoItems.length; i++) {
-            SwingNovice.textFields[i] = new JTextField();
-            labels[i] = new JLabel(SwingNovice.expertInfoItems[i]);
+        for (int i = 0; i < expertInfoItems.length; i++) {
+            textFields[i] = new JTextField();
+            labels[i] = new JLabel(expertInfoItems[i]);
             boxes[i] = Box.createHorizontalBox();
             boxes[i].add(labels[i]);
-            boxes[i].add(SwingNovice.textFields[i]);
+            boxes[i].add(textFields[i]);
             Forum.add(boxes[i]);
         }
 
-        Forum.setLayout(new GridLayout(SwingNovice.expertInfoItems.length, 1));
+        Forum.setLayout(new GridLayout(expertInfoItems.length, 1));
 
         Forum.setPreferredSize(new Dimension(500, 400));
         Forum.setMaximumSize(new Dimension(500, 400));
         Forum.setMinimumSize(new Dimension(500, 400));
-        jresult.add(Forum);
+//        jresult.add(Forum);
+        this.add(Forum);
         JButton jButton = new JButton("提交录入");
         jButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 StringBuilder conformationString = new StringBuilder();
-                for (int i = 0; i < SwingNovice.expertInfoItems.length; i++) {
-                    if (SwingNovice.textFields[i].getText().equals("")) {
+                for (int i = 0; i < expertInfoItems.length; i++) {
+                    if (textFields[i].getText().equals("")) {
                         JOptionPane.showMessageDialog(null, "信息不全请继续录入", "提示信息", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    conformationString.append(SwingNovice.expertInfoItems[i]);
+                    conformationString.append(expertInfoItems[i]);
                     conformationString.append(":");
-                    conformationString.append(SwingNovice.textFields[i].getText());
+                    conformationString.append(textFields[i].getText());
                     conformationString.append("\n");
                 }
                 conformationString.append("\n 请确认上述信息是否无误 \n是否录入？");
@@ -57,11 +72,11 @@ public class RegistrationPane {
                 if (response == 0) {
                     try{
                         List<String> reg_info = new ArrayList<>();
-                        for(int k = 0;k < SwingNovice.textFields.length;k ++){
-                            reg_info.add(SwingNovice.expertInfoItems[k] + " " + SwingNovice.textFields[k].getText().replaceAll("\\s*",""));
+                        for(int k = 0;k < textFields.length;k ++){
+                            reg_info.add(expertInfoItems[k] + " " + textFields[k].getText().replaceAll("\\s*",""));
                         }
                         Command submit_reg = new Command("submit_reg",reg_info);
-                        SwingNovice.comOut.write(submit_reg.serialize());
+                        comOut.write(submit_reg.serialize());
                     }
                     catch (IOException ioe){
                         System.out.println(ioe.getMessage());
@@ -72,8 +87,8 @@ public class RegistrationPane {
         });
         jButton.setPreferredSize(new Dimension(150, 80));
         jButton.setMinimumSize(new Dimension(150, 80));
-        jresult.add(jButton);
-
-        return jresult;
+//        jresult.add(jButton);
+        this.add(jButton);
+//        return jresult;
     }
 }
