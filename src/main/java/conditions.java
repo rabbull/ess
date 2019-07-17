@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -78,9 +80,9 @@ public class conditions extends JPanel {
 
     private Integer left_experts;
 
-    private Socket comIn;
+    private DataInputStream comIn;
 
-    private Socket comOut;
+    private DataOutputStream comOut;
 
     public conditions(String[] selection_condition_inputs, String biding_type, String biding_method, String industry_type, String organ_type, Date biding_time_start_inputs, Date biding_time_end_inputs, List<String> company_subs,Integer left_experts) {
         this.selection_condition_inputs = selection_condition_inputs;
@@ -104,13 +106,13 @@ public class conditions extends JPanel {
 //--------------------------------------------------------------------------------
         try{
             Command get_pros = new Command("Get_professions", Collections.singletonList("all"));
-            SwingNovice.comOut.write(get_pros.serialize());
+            comOut.write(get_pros.serialize());
         }
         catch (IOException ioe){
             System.out.println(ioe.getMessage());
         }
         try{
-            Command pros = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command pros = Command.getOneCommandFromInputStream(comIn);
             if(pros.getCmd().equals("Object")) {
                 String pros_str = String.join(" ",pros.getArgs());
                 pro_chunks = JSON.parseArray(pros_str, Profession.class);
@@ -316,13 +318,13 @@ public class conditions extends JPanel {
                             (String)organ_type,
                             start_date,end_date,company_subs,main_pros,aux_pros);
                     Command Roll = new Command("submit",Collections.singletonList(subs.toString()));
-                    SwingNovice.comOut.write(Roll.serialize());
+                    comOut.write(Roll.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.getMessage());
                 }
                 try{
-                    Command roll_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command roll_res = Command.getOneCommandFromInputStream(comIn);
                     if(roll_res.getCmd().equals("Object")) {
                         String res_str = String.join(" ",roll_res.getArgs());
                         java.util.List<Invites> exp_res = JSON.parseArray(res_str,Invites.class);

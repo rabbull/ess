@@ -13,27 +13,27 @@ import java.util.List;
 
 public class Client implements ClientInterface {
 
-    public static Socket com;
+    private static Socket com;
 
-    public  DataInputStream comIn;
+    private  DataInputStream comIn;
 
-    public  DataOutputStream comOut;
+    private  DataOutputStream comOut;
 
     public Client() {
 
     }
 
-    public static void main(String[] args) {
-        JFrame j = new JFrame("专家信息管理系统");
-        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        j.add(new CenterPane(), BorderLayout.CENTER);
-        j.setVisible(true);
-        j.setSize(750, 600);
-    }
+//    public static void main(String[] args) {
+//        JFrame j = new JFrame("专家信息管理系统");
+//        j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        j.add(new CenterPane(), BorderLayout.CENTER);
+//        j.setVisible(true);
+//        j.setSize(750, 600);
+//    }
     public void run(){
         JFrame j = new JFrame("专家信息管理系统");
         j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        j.add(new CenterPane(), BorderLayout.CENTER);
+        j.add(new CenterPane(comIn,comOut), BorderLayout.CENTER);
         j.setVisible(true);
         j.setSize(750, 600);
     }

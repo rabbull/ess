@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -21,11 +23,14 @@ public class RegistrationPane extends JPanel{
 
     private   JTextField[] textFields = new JTextField[expertInfoItems.length];
 
-    private Socket comIn;
+    private DataInputStream comIn;
 
-    private Socket comOut;
+    private DataOutputStream comOut;
 
-    public  RegistrationPane() {
+    public  RegistrationPane(DataInputStream com1,DataOutputStream com2) {
+        this.comIn = com1;
+        this.comOut = com2;
+        
         Box jresult = Box.createVerticalBox();
         JLabel[] labels = new JLabel[expertInfoItems.length];
         Box[] boxes = new Box[expertInfoItems.length];
@@ -71,7 +76,7 @@ public class RegistrationPane extends JPanel{
                             reg_info.add(expertInfoItems[k] + " " + textFields[k].getText().replaceAll("\\s*",""));
                         }
                         Command submit_reg = new Command("submit_reg",reg_info);
-                        SwingNovice.comOut.write(submit_reg.serialize());
+                        comOut.write(submit_reg.serialize());
                     }
                     catch (IOException ioe){
                         System.out.println(ioe.getMessage());

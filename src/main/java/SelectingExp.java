@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
@@ -53,9 +55,9 @@ public class SelectingExp extends JPanel{
 
     private  Object[] ids = {"公司名称", "回避原因"};
 
-    private Socket comIn;
+    private DataInputStream comIn;
 
-    private Socket comOut;
+    private DataOutputStream comOut;
 
 //    private  JComboBox<String> maj_1_main;
 //
@@ -97,17 +99,21 @@ public class SelectingExp extends JPanel{
 
     Integer left_exps = new Integer(0);
 
-    public  SelectingExp() {
+    public  SelectingExp(DataInputStream com1,DataOutputStream com2) {
+        
+        this.comIn = com1;
+        this.comOut = com2;
+        
         try{
             Command get_method_options = new Command("requestall BiddingMethod");
-            SwingNovice.comOut.write(get_method_options.serialize());
+            comOut.write(get_method_options.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.getMessage());
         }
 
         try{
-            Command methods = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command methods = Command.getOneCommandFromInputStream(comIn);
             if(methods.getCmd().equals("Object")){
                 method_options = methods.getArgs();
                 //只需要一些字符串怎么办？？
@@ -119,13 +125,13 @@ public class SelectingExp extends JPanel{
 //---------------------------------------------------------
         try{
             Command get_biding_options = new Command("requestall BiddingType");
-            SwingNovice.comOut.write(get_biding_options.serialize());
+            comOut.write(get_biding_options.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.getMessage());
         }
         try{
-            Command bidings = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command bidings = Command.getOneCommandFromInputStream(comIn);
             if(bidings.getCmd().equals("Object")){
                 Biding_options = bidings.getArgs();
                 //只需要一些字符串怎么办？？
@@ -137,13 +143,13 @@ public class SelectingExp extends JPanel{
 //----------------------------------------------------------------------------------
         try{
             Command get_industry_options = new Command("requestall IndustryType");
-            SwingNovice.comOut.write(get_industry_options.serialize());
+            comOut.write(get_industry_options.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.getMessage());
         }
         try{
-            Command industrys = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command industrys = Command.getOneCommandFromInputStream(comIn);
             if(industrys.getCmd().equals("Object")){
                 industry_options = industrys.getArgs();
                 //只需要一些字符串怎么办？？
@@ -157,13 +163,13 @@ public class SelectingExp extends JPanel{
 
         try{
             Command get_organ_options = new Command("requestall OrgType");
-            SwingNovice.comOut.write(get_organ_options.serialize());
+            comOut.write(get_organ_options.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.getMessage());
         }
         try{
-            Command organs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command organs = Command.getOneCommandFromInputStream(comIn);
             if(organs.getCmd().equals("Object")){
                 organ_options = organs.getArgs();
                 //只需要一些字符串怎么办？？

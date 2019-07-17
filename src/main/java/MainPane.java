@@ -6,6 +6,9 @@ import common.Serializable;
 import command.Command;
 import javax.swing.*;
 import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.*;
 import java.util.Collections;
 import java.awt.event.ActionEvent;
@@ -34,25 +37,31 @@ public class MainPane extends JPanel{
 
 //    public static Object[][] expertInformation = {{"asdasd", "asdawr", "asdarsafwfe", "asdarsr", "asdawdsd", "adwsad", "adsaw", "asdawd"}, {"1231231", "qwe2w2wrawe", "asdqwrw", "aef3efw", "asadwd", "asdawds", "asdawsa", "asdawd"}};
 
-    public Object[][] expertInformation;
+    private Object[][] expertInformation;
 
-//    public static Object[][] projectInformation = {{"1000", "asd", "qwdq"}, {"qwd", "asd", "asd"}};
+//    private static Object[][] projectInformation = {{"1000", "asd", "qwdq"}, {"qwd", "asd", "asd"}};
 
-    public Object[][] projectInformation;
+    private Object[][] projectInformation;
 
-    public Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
+    private Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
 
-    public String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
+    private String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
 
-    public Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
+    private Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
 
-    public List<Project> Proj_chunk;
+    private List<Project> Proj_chunk;
 
-    public Project p;
+    private Project p;
 
-    public List<Expert> Exper_chunk;
+    private List<Expert> Exper_chunk;
 
-    public  MainPane() {
+    private DataInputStream comIn;
+
+    private DataOutputStream comOut;
+
+    public  MainPane(DataInputStream com1, DataOutputStream com2) {
+        this.comIn = com1;
+        this.comOut = com2;
         this.setLayout(new GridLayout(2,2,6,6));
 //        JPanel result = new JPanel(false);
 //        result.setLayout(new GridLayout(2, 2, 6, 6));
@@ -143,13 +152,13 @@ public class MainPane extends JPanel{
                     Command del_exp = new Command("delete",Collections.singletonList(exp2d.toString()));
                     Command del_suc = new Command("");
                     try {
-                        SwingNovice.comOut.write(del_exp.serialize());
+                        comOut.write(del_exp.serialize());
                     }
                     catch(IOException ioe){
                         System.out.println(ioe.fillInStackTrace());
                     }
                     try {
-                        del_suc = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                        del_suc = Command.getOneCommandFromInputStream(comIn);
                     }
                     catch (InvalidCommandFormatException icfe){
                         System.out.println(icfe.fillInStackTrace());
@@ -180,13 +189,13 @@ public class MainPane extends JPanel{
                         }
                     }
                     Command absent_command = new Command("requestprobyexpnumber",Collections.singletonList(IDout.toString()));
-                    SwingNovice.comOut.write(absent_command.serialize());
+                    comOut.write(absent_command.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
                 try{
-                    Command proj_in = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command proj_in = Command.getOneCommandFromInputStream(comIn);
                     if(proj_in.getCmd().equals("Object")) {
                         JPanel out_panel = new JPanel(new GridLayout(1,1));
                         out_panel.setPreferredSize(new Dimension(400, 400));
@@ -251,7 +260,7 @@ public class MainPane extends JPanel{
                                     out.add(invs.get(o).getProject().getId() + "/" + invs.get(o).getReason());
                                 }
                                 Command submit_abs = new Command("submit_abs", out);
-                                SwingNovice.comOut.write(submit_abs.serialize());
+                                comOut.write(submit_abs.serialize());
                             }
                             catch(IOException ioe){
                                 System.out.println(ioe.getMessage());
@@ -317,14 +326,14 @@ public class MainPane extends JPanel{
                 Command sear = new Command("search " + search_type + " " + search_text );
 
                 try {
-                    SwingNovice.comOut.write(sear.serialize());
+                    comOut.write(sear.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
 
                 try{
-                    Command search_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command search_res = Command.getOneCommandFromInputStream(comIn);
                     if(search_res.getCmd().equals("Object")){
                         String processed = String.join(" ", search_res.getArgs());
                         List<Expert> out = JSON.parseArray(processed,Expert.class);
@@ -441,14 +450,14 @@ public class MainPane extends JPanel{
                 }
                 try{
                     Command get_pro_exp = new Command("requestprojexpert",Collections.singletonList(p.getId().toString()));
-                    SwingNovice.comOut.write(get_pro_exp.serialize());
+                    comOut.write(get_pro_exp.serialize());
                 }
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
                 String[] exp_namelist = new String[1];
                 try{
-                    Command exps = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+                    Command exps = Command.getOneCommandFromInputStream(comIn);
                     if(exps.getCmd().equals("Object")){
                         String exps_str = String.join(" ",exps.getArgs());
                         List<Expert> experts = JSON.parseArray(exps_str,Expert.class);
@@ -488,7 +497,7 @@ public class MainPane extends JPanel{
                             grades.add(exp_namelist[k] + " " + score_input[k]);
                         }
                         Command submit_grades = new Command("Submit",grades);
-                        SwingNovice.comOut.write(submit_grades.serialize());
+                        comOut.write(submit_grades.serialize());
                     }
                     catch (IOException ioe){
                         System.out.println(ioe.fillInStackTrace());
@@ -510,13 +519,13 @@ public class MainPane extends JPanel{
         clargs.add("all");
         Command require_all_exp = new Command("require_exp",clargs);
         try {
-            SwingNovice.comOut.write(require_all_exp.serialize());
+            comOut.write(require_all_exp.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.fillInStackTrace());
         }
         try {
-            Command js = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command js = Command.getOneCommandFromInputStream(comIn);
             if(js.getCmd().equals("Object")){
                 String processed = String.join(" ", js.getArgs());
                 Exper_chunk = JSON.parseArray(processed,Expert.class);
@@ -542,13 +551,13 @@ public class MainPane extends JPanel{
         poargs.add("all");
         Command require_all_proj = new Command("require_proj",poargs);
         try {
-            SwingNovice.comOut.write(require_all_proj.serialize());
+            comOut.write(require_all_proj.serialize());
         }
         catch(IOException ioe){
             System.out.println(ioe.fillInStackTrace());
         }
         try {
-            Command pjs = Command.getOneCommandFromInputStream(SwingNovice.comIn);
+            Command pjs = Command.getOneCommandFromInputStream(comIn);
             if(pjs.getCmd().equals("Object")){
                 String processed = String.join(" ", pjs.getArgs());
                 Proj_chunk = JSON.parseArray(processed,Project.class);

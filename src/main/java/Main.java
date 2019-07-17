@@ -32,7 +32,7 @@ public class Main {
             break;
         } while (true);
 
-        final ClientInterface clientObj = new SwingNovice();
+        final ClientInterface clientObj = new Client();
         clientObj.registerSocket(clientSocket);
         Thread clientThread = new Thread(clientObj);
 
