@@ -1,3 +1,4 @@
+import Front_classes.Project_FE;
 import com.alibaba.fastjson.JSON;
 import command.Command;
 import command.exceptions.InvalidCommandFormatException;
@@ -20,23 +21,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class conditions extends JPanel {
-    private  String[] selection_condition_inputs = new String[5];
-
-    private  String Biding_type;
-
-    private  String Biding_method;
-
-    private  String industry_type;
-
-    private  String organ_type;
-
-    private  Date start_date;
-
-    private  Date end_date;
+    private  Project_FE project;
 
     private  JComboBox<String> maj_1_main;
 
@@ -54,9 +42,9 @@ public class conditions extends JPanel {
 
     private  JLabel total_per_lable;
 
-    private  List<Profession> pro_chunks;
-
     private List<String> company_subs;
+
+    private  List<Profession> pro_chunks;
 
     private  String[] maj_1_m = new String[100];
 
@@ -78,22 +66,20 @@ public class conditions extends JPanel {
 
     private  ArrayList<String> main_pros;
 
-    private Integer left_experts;
-
     private DataInputStream comIn;
 
     private DataOutputStream comOut;
 
-    public conditions(String[] selection_condition_inputs, String biding_type, String biding_method, String industry_type, String organ_type, Date biding_time_start_inputs, Date biding_time_end_inputs, List<String> company_subs,Integer left_experts) {
-        this.selection_condition_inputs = selection_condition_inputs;
-        Biding_type = biding_type;
-        Biding_method = biding_method;
-        this.industry_type = industry_type;
-        this.organ_type = organ_type;
-        this.start_date = biding_time_start_inputs;
-        this.start_date = biding_time_end_inputs;
+    private Integer left_experts;
+
+    public conditions(Project_FE project, List<String> company_subs, DataInputStream comIn, DataOutputStream comOut) {
+        this.project = project;
         this.company_subs = company_subs;
-        this.left_experts = left_experts;
+        this.comIn = comIn;
+        this.comOut = comOut;
+
+
+
 //那么到底传进来的是不是引用呢
 
 //        JPanel maj_selecting = new JPanel();
@@ -117,6 +103,7 @@ public class conditions extends JPanel {
                 String pros_str = String.join(" ",pros.getArgs());
                 pro_chunks = JSON.parseArray(pros_str, Profession.class);
             }
+            //TODO 改成profesionsheet接收方式
         }
         catch (InvalidCommandFormatException icfe){
             System.out.println(icfe.getMessage());
@@ -260,13 +247,13 @@ public class conditions extends JPanel {
         Box total_box = Box.createHorizontalBox();
         total_box.setPreferredSize(new Dimension(150, 0));
         total_box.add(new JLabel("该条件拟抽取专家数"));
+        JTable conditions = new JTable();
         total_box.add(total_personel);
-        total_per_lable = new JLabel("还需要" + left_experts.toString());
+        total_per_lable = new JLabel("还需要" + (project.getExpected_number()));
 //        if(isRerolling) total_per_lable.setText("还需要" + (p.getNumExpertExpected() - p.getNumExpertReal()) + "人");
         total_box.add(total_per_lable);
         maj_inputs.add(total_box);
 
-        JTable conditions = new JTable();
         DefaultTableModel cond_m = (DefaultTableModel) conditions.getModel();
         Object[] c_ids = {"评标专业", "专业等级", "人数"};
         cond_m.setColumnIdentifiers(c_ids);
@@ -307,17 +294,7 @@ public class conditions extends JPanel {
 //                    }
 //                    Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
 //                    Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
-                    subs = new Sheet_selection(selection_condition_inputs[0].replaceAll("\\s*",""),
-                            selection_condition_inputs[1].replaceAll("\\s*",""),
-                            Long.parseLong(selection_condition_inputs[2].replaceAll("\\s*","")),
-                            selection_condition_inputs[3].replaceAll("\\s*",""),
-                            Long.parseLong(selection_condition_inputs[4].replaceAll("\\s*","")),
-                            selection_condition_inputs[5].replaceAll("\\s*",""),
-                            (String)Biding_type,
-                            (String)Biding_method,
-                            (String)industry_type,
-                            (String)organ_type,
-                            start_date,end_date,company_subs,main_pros,aux_pros);
+                    //TODO 进行提交
                     Command Roll = new Command("submit",Collections.singletonList(subs.toString()));
                     comOut.write(Roll.serialize());
                 }
@@ -410,17 +387,17 @@ public class conditions extends JPanel {
                 if(out_main.get(0).equals("全部")){
                     new_row[0] = out_main.get(0);
                     new_row[1] = 1;
-                    main_pros.add(((String)out_main.get(0)).split("/")[0]);
+                    main_pros.add(((String)out_main.get(0)).split("/")[0] + "/" + Integer.parseInt(total_personel.getText()));
                 }
                 else if(out_main.get(1).equals("全部")){
                     new_row[0] = out_main.get(1);
                     new_row[1] = 2;
-                    main_pros.add(((String)out_main.get(1)).split("/")[0]);
+                    main_pros.add(((String)out_main.get(1)).split("/")[0] + "/" + Integer.parseInt(total_personel.getText()));
                 }
                 else {
                     new_row[0] = out_main.get(2);
                     new_row[1] = 3;
-                    main_pros.add(((String) out_main.get(2)).split("/")[0]);
+                    main_pros.add(((String) out_main.get(2)).split("/")[0] + "/" + Integer.parseInt(total_personel.getText()));
                 }
                 new_row[2] = total_personel.getText();
 
@@ -429,13 +406,13 @@ public class conditions extends JPanel {
                 out_aux.add((String) maj_2_aux.getSelectedItem());
                 out_aux.add((String) maj_3_aux.getSelectedItem());
                 if(out_aux.get(0).equals("全部")){
-                    aux_pros.add(out_aux.get(0).split("/")[0]);
+                    aux_pros.add(out_aux.get(0).split("/")[0] + "/" + Integer.parseInt(total_personel.getText()));
                 }
                 else if(out_aux.get(1).equals("全部")){
-                    aux_pros.add(out_aux.get(1).split("/")[0]);
+                    aux_pros.add(out_aux.get(1).split("/")[0] + "/" + Integer.parseInt(total_personel.getText()));
                 }
                 else {
-                    aux_pros.add(out_aux.get(2).split("/")[0]);
+                    aux_pros.add(out_aux.get(2).split("/")[0]+ "/" + Integer.parseInt(total_personel.getText()));
                 }
 
                 m.addRow(new_row);

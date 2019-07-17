@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.List;
 
+import Front_classes.Project_FE;
 import com.alibaba.fastjson.JSON;
 import command.Command;
 import command.exceptions.InvalidCommandFormatException;
@@ -58,44 +59,6 @@ public class SelectingExp extends JPanel{
     private DataInputStream comIn;
 
     private DataOutputStream comOut;
-
-//    private  JComboBox<String> maj_1_main;
-//
-//    private  JComboBox<String> maj_2_main;
-//
-//    private  JComboBox<String> maj_3_main;
-//
-//    private  JComboBox<String> maj_1_aux;
-//
-//    private  JComboBox<String> maj_2_aux;
-//
-//    private  JComboBox<String> maj_3_aux;
-//
-//    private  JTextField total_personel;
-//
-//    private  JLabel total_per_lable;
-//
-//    private  List<Profession> pro_chunks;
-//
-//    private  String[] maj_1_m = new String[100];
-//
-//    private  String[] maj_2_m = new String[100];
-//
-//    private  String[] maj_3_m = new String[100];
-//
-//    private  String[] maj_2_a = new String[100];
-//
-//    private  String[] maj_3_a = new String[100];
-//
-//    private  List<Profession> maj_2 = new ArrayList<>();
-//
-//    private  List<Profession> maj_3 = new ArrayList<>();
-//
-//    private  Expert[] exp_selected;
-//
-//    private  ArrayList<String> aux_pros;
-//
-//    private  ArrayList<String> main_pros;
 
     Integer left_exps = new Integer(0);
 
@@ -394,14 +357,20 @@ public class SelectingExp extends JPanel{
             s_inputs[g] = selection_condition_inputs[g].getText();
         }
 
-        this.add(new conditions(s_inputs,
+        Project_FE proj = new Project_FE(selection_condition_inputs[0].getText().replaceAll("\\s*",""),
+                selection_condition_inputs[1].getText().replaceAll("\\s*",""),
+                Integer.parseInt(selection_condition_inputs[2].getText().replaceAll("\\s*","")),
+                selection_condition_inputs[3].getText().replaceAll("\\s*",""),
+                selection_condition_inputs[4].getText().replaceAll("\\s*",""),
+                selection_condition_inputs[5].getText().replaceAll("\\s*",""),
+                Integer.parseInt(person_input.getText().replaceAll("\\s*","")),
                 (String)Biding_type.getSelectedItem(),
                 (String)Biding_method.getSelectedItem(),
                 (String)industry_type.getSelectedItem(),
                 (String)organ_type.getSelectedItem(),
                 starting_date,
-                ending_date,
-                company_sub,
-                left_exps));
+                ending_date);
+
+        this.add(new conditions(proj,company_sub,comIn,comOut));
     }
 }

@@ -23,6 +23,8 @@ import javax.swing.table.TableModel;
 import models.entities.Expert;
 import models.entities.Project;
 import models.relations.Invites;
+import models.sheets.ExpertGetAllSheet;
+import models.sheets.ProjectGetAllSheet;
 
 
 public class MainPane extends JPanel{
@@ -40,15 +42,15 @@ public class MainPane extends JPanel{
 
     private Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
 
-    private String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
+    private String[] filterConditions = {"ID","姓名","电话号码","公司代码"};
 
-    private Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
+    private Object[] ProjectTableTitles = {"项目编号","项目名称","招标金额","招标类型","招标方式","行业类型"};
 
-    private List<Project> Proj_chunk;
+    private List<ProjectGetAllSheet> Proj_chunk;
 
     private Project p;
 
-    private List<Expert> Exper_chunk;
+    private List<ExpertGetAllSheet> Exper_chunk;
 
     private DataInputStream comIn;
 
@@ -180,9 +182,9 @@ public class MainPane extends JPanel{
                     int selrow = expertTable.getSelectedRow();
                     Integer IDout = new Integer(0);
 //                    Expert abs_exp = new Expert(model.getValueAt(selrow,0).toString(),model.getValueAt(selrow,1).toString().equals("男"),model.getValueAt(selrow,2).toString());
-                    for(Expert exp:Exper_chunk){
-                        if(exp.getId().equals(model.getValueAt(selrow,0))){
-                            IDout = exp.getId();
+                    for(ExpertGetAllSheet exp:Exper_chunk){
+                        if(exp.getExpert().getId().equals(model.getValueAt(selrow,0))){
+                            IDout = exp.getExpert().getId();
                         }
                     }
                     Command absent_command = new Command("requestprobyexpnumber",Collections.singletonList(IDout.toString()));
@@ -202,7 +204,7 @@ public class MainPane extends JPanel{
 //                        for(Invites inv:invs){
 //                            invites.add(inv);
 //                        }
-
+                        //TODO 需要等invitessheet改了之后改这里
                         JCheckBox[] exp_checks = new JCheckBox[invs.size()];
                         JTextField[] exp_reason = new JTextField[invs.size()];
                         JPanel exps = new JPanel();
@@ -276,7 +278,7 @@ public class MainPane extends JPanel{
         //搜索组合面板
         JPanel Filter = new JPanel(false);
         Filter.setPreferredSize(new Dimension(100, 100));
-//TODO
+//TODO 本地搜索
         //搜索本地
 
         JLabel search_title = new JLabel("搜索:");
@@ -309,7 +311,7 @@ public class MainPane extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //搜索的输入处理
-                String search_text = search_tx.getText();
+                String search_text = search_tx.getText().replaceAll("\\s*","");
                 for(int o = 0;o < search_text.length();o ++){
                     if(search_text.charAt(o) == ' '){
                         JOptionPane.showMessageDialog(null,"输入中包含空格，请重新输入");
@@ -317,6 +319,61 @@ public class MainPane extends JPanel{
                         return;
                     }
                 }
+                Object[][] result = new Object[200][5];
+                int i = 0;
+                if(btns[0].isSelected()){
+                    for(ExpertGetAllSheet ega:Exper_chunk){
+                        if(ega.getExpert().getId().equals(search_text)) {
+                            result[i][0] = ega.getExpert().getId();
+                            result[i][1] = ega.getExpert().getName();
+                            result[i][2] = ega.getExpert().getSex();
+                            result[i][3] = ega.getExpert().getPhoneNumber();
+                            result[i][4] = ega.getExpert().getCompany();
+                            i ++;
+                        }
+                    }
+                }
+                else if(btns[1].isSelected()){
+                    for(ExpertGetAllSheet ega:Exper_chunk){
+                        if(ega.getExpert().getName().equals(search_text)) {
+                            result[i][0] = ega.getExpert().getId();
+                            result[i][1] = ega.getExpert().getName();
+                            result[i][2] = ega.getExpert().getSex();
+                            result[i][3] = ega.getExpert().getPhoneNumber();
+                            result[i][4] = ega.getExpert().getCompany();
+                            i ++;
+                        }
+                    }
+                }
+                else if(btns[2].isSelected()){
+                    for(ExpertGetAllSheet ega:Exper_chunk){
+                        if(ega.getExpert().getPhoneNumber().equals(search_text)) {
+                            result[i][0] = ega.getExpert().getId();
+                            result[i][1] = ega.getExpert().getName();
+                            result[i][2] = ega.getExpert().getSex();
+                            result[i][3] = ega.getExpert().getPhoneNumber();
+                            result[i][4] = ega.getExpert().getCompany();
+                            i ++;
+                        }
+                    }
+                }
+                else if(btns[3].isSelected()){
+                    for(ExpertGetAllSheet ega:Exper_chunk){
+                        if(ega.getExpert().getCompany().equals(Integer.parseInt(search_text))) {
+                            result[i][0] = ega.getExpert().getId();
+                            result[i][1] = ega.getExpert().getName();
+                            result[i][2] = ega.getExpert().getSex();
+                            result[i][3] = ega.getExpert().getPhoneNumber();
+                            result[i][4] = ega.getExpert().getCompany();
+                            i ++;
+                        }
+                    }
+                }
+                DefaultTableModel res = new DefaultTableModel();
+                for(int k = 0;k < i + 1;k ++){
+                    res.addRow(result[k]);
+                }
+                expertTable.setModel(res);
 
             }
         });
@@ -387,10 +444,7 @@ public class MainPane extends JPanel{
                 out_p.add(new JLabel(out.toString()));
                         for(Project proj:Proj_chunk) {
                             if(proj.getId().equals((Integer) model.getValueAt(selected_r,0))) {
-                                String[] s_input = new String[6];
-                                s_input[0] = proj.getId().toString();
-                                s_input[1] = proj.getAmount()
-                                conditions cnds = new conditions()
+
                             }
                         }
                         int response = JOptionPane.showConfirmDialog(null, jsp_out, "补充抽取", JOptionPane.YES_NO_OPTION);
@@ -408,9 +462,9 @@ public class MainPane extends JPanel{
                 int selrow = Proj_table.getSelectedRow();
 //                Project p = new Project(p_model.getValueAt(selrow,0).toString(),p_model.getValueAt(selrow,1).toString(),Long.parseLong((String)p_model.getValueAt(selrow,2)),p_model.getValueAt(selrow,3).toString(),p_model.getValueAt(selrow,4).toString(),p_model.getValueAt(selrow,5).toString(),p_model.getValueAt(selrow,6).toString());
 
-                for(Project pr:Proj_chunk){
-                    if(pr.getId().equals((Integer)p_model.getValueAt(selrow,0))){
-                        p = pr;
+                for(ProjectGetAllSheet pr:Proj_chunk){
+                    if(pr.getProject().getId().equals((Integer)p_model.getValueAt(selrow,0))){
+                        p = pr.getProject();
                         break;
                     }
                 }
@@ -494,14 +548,14 @@ public class MainPane extends JPanel{
             Command js = Command.getOneCommandFromInputStream(comIn);
             if(js.getCmd().equals("Object")){
                 String processed = String.join(" ", js.getArgs());
-                Exper_chunk = JSON.parseArray(processed,Expert.class);
-                expertInformation = new Object[Exper_chunk.size()][4];
+                Exper_chunk = JSON.parseArray(processed,ExpertGetAllSheet.class);
+                expertInformation = new Object[Exper_chunk.size()][5];
                 for(int i = 0;i < Exper_chunk.size();i ++){
-                    expertInformation[i][0] = Exper_chunk.get(i).getId();
-                    expertInformation[i][1] = Exper_chunk.get(i).getName();
-                    expertInformation[i][2] = Exper_chunk.get(i).getSex();
-                    expertInformation[i][3] = Exper_chunk.get(i).getPhoneNumber();
-//                    expertInformation[i][3] = out.get(i).getCompany().getName();
+                    expertInformation[i][0] = Exper_chunk.get(i).getExpert().getId();
+                    expertInformation[i][1] = Exper_chunk.get(i).getExpert().getName();
+                    expertInformation[i][2] = Exper_chunk.get(i).getExpert().getSex();
+                    expertInformation[i][3] = Exper_chunk.get(i).getExpert().getPhoneNumber();
+                    expertInformation[i][4] = Exper_chunk.get(i).getExpert().getCompany();
                 }
             }
             else{
@@ -526,15 +580,15 @@ public class MainPane extends JPanel{
             Command pjs = Command.getOneCommandFromInputStream(comIn);
             if(pjs.getCmd().equals("Object")){
                 String processed = String.join(" ", pjs.getArgs());
-                Proj_chunk = JSON.parseArray(processed,Project.class);
+                Proj_chunk = JSON.parseArray(processed,ProjectGetAllSheet.class);
                 projectInformation = new Object[Proj_chunk.size()][6];
                 for(int i = 0;i < Proj_chunk.size();i ++){
-                    projectInformation[i][0] = Proj_chunk.get(i).getId();
-                    projectInformation[i][1] = Proj_chunk.get(i).getName();
-                    projectInformation[i][2] = Proj_chunk.get(i).getAmount();
-                    projectInformation[i][3] = Proj_chunk.get(i).getBiddingType();
-                    projectInformation[i][4] = Proj_chunk.get(i).getBiddingMethod();
-                    projectInformation[i][5] = Proj_chunk.get(i).getIndustryType();
+                    projectInformation[i][0] = Proj_chunk.get(i).getProject().getId();
+                    projectInformation[i][1] = Proj_chunk.get(i).getProject().getName();
+                    projectInformation[i][2] = Proj_chunk.get(i).getProject().getAmount();
+                    projectInformation[i][3] = Proj_chunk.get(i).getProject().getBiddingType();
+                    projectInformation[i][4] = Proj_chunk.get(i).getProject().getBiddingMethod();
+                    projectInformation[i][5] = Proj_chunk.get(i).getProject().getIndustryType();
                 }
             }
             else{

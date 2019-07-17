@@ -1,35 +1,14 @@
 package models.sheets;
 
+import Front_classes.Project_FE;
 import com.alibaba.fastjson.JSON;
 import models.entities.Profession;
-
+import models.entities.Project;
 import java.util.Date;
 import java.util.List;
 
 public class Sheet_selection {
-    private String proj_id;
-
-    private String proj_name;
-
-    private long biding_amount;
-
-    private String biding_location;
-
-    private long biding_timebridge;
-
-    private String bider;
-
-    private String biding_type;
-
-    private String biding_method;
-
-    private String industry_type;
-
-    private String organ_type;
-
-    private Date start_date;
-
-    private Date end_date;
+    private Project_FE project;
 
     private List<String> Avoid_companies;
 
@@ -37,110 +16,19 @@ public class Sheet_selection {
 
     private List<String> aux_Conditions;
 
-    public Sheet_selection(String proj_id,String proj_name, long biding_amount, String biding_location, long biding_timebridge, String bider, String biding_type, String biding_method, String industry_type, String organ_type, Date start_date, Date end_date, List<String> avoid_companies, List<String> main_Conditions, List<String> aux_Conditions) {
-        this.proj_id = proj_id;
-        this.proj_name = proj_name;
-        this.biding_amount = biding_amount;
-        this.biding_location = biding_location;
-        this.biding_timebridge = biding_timebridge;
-        this.bider = bider;
-        this.biding_type = biding_type;
-        this.biding_method = biding_method;
-        this.industry_type = industry_type;
-        this.organ_type = organ_type;
-        this.start_date = start_date;
-        this.end_date = end_date;
+    public Sheet_selection(Project_FE project, List<String> avoid_companies, List<String> main_Conditions, List<String> aux_Conditions) {
+        this.project = project;
         Avoid_companies = avoid_companies;
         this.main_Conditions = main_Conditions;
         this.aux_Conditions = aux_Conditions;
     }
 
-    public String getProj_name() {
-        return proj_name;
+    public Project_FE getProject() {
+        return project;
     }
 
-    public void setProj_name(String proj_name) {
-        this.proj_name = proj_name;
-    }
-
-    public long getBiding_amount() {
-        return biding_amount;
-    }
-
-    public void setBiding_amount(long biding_amount) {
-        this.biding_amount = biding_amount;
-    }
-
-    public String getBiding_location() {
-        return biding_location;
-    }
-
-    public void setBiding_location(String biding_location) {
-        this.biding_location = biding_location;
-    }
-
-    public long getBiding_timebridge() {
-        return biding_timebridge;
-    }
-
-    public void setBiding_timebridge(long biding_timebridge) {
-        this.biding_timebridge = biding_timebridge;
-    }
-
-    public String getBider() {
-        return bider;
-    }
-
-    public void setBider(String bider) {
-        this.bider = bider;
-    }
-
-    public String getBiding_type() {
-        return biding_type;
-    }
-
-    public void setBiding_type(String biding_type) {
-        this.biding_type = biding_type;
-    }
-
-    public String getBiding_method() {
-        return biding_method;
-    }
-
-    public void setBiding_method(String biding_method) {
-        this.biding_method = biding_method;
-    }
-
-    public String getIndustry_type() {
-        return industry_type;
-    }
-
-    public void setIndustry_type(String industry_type) {
-        this.industry_type = industry_type;
-    }
-
-    public String getOrgan_type() {
-        return organ_type;
-    }
-
-    public void setOrgan_type(String organ_type) {
-        this.organ_type = organ_type;
-    }
-
-    public Date getStart_date() {
-        return start_date;
-    }
-
-    public void setStart_date(Date start_date) {
-        this.start_date = start_date;
-    }
-
-    public Date getEnd_date() {
-        return end_date;
-    }
-
-    public void setEnd_date(Date end_date) {
-        this.end_date = end_date;
+    public void setProject(Project_FE project) {
+        this.project = project;
     }
 
     public List<String> getAvoid_companies() {
@@ -165,9 +53,5 @@ public class Sheet_selection {
 
     public void setAux_Conditions(List<String> aux_Conditions) {
         this.aux_Conditions = aux_Conditions;
-    }
-
-    public String toString(){
-        return JSON.toJSONString(this);
     }
 }
