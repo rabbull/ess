@@ -14,6 +14,7 @@ import java.util.List;
 public class SwingNovice extends JPanel implements ClientInterface {
 
     public static String[] expertInfoItems = {"姓名","性别","电话号码","公司"};  //录入专家信息的表的labels
+
     public static JTextField[] textFields = new JTextField[expertInfoItems.length];
 
     public static JTabbedPane mainTabPane;
@@ -22,11 +23,6 @@ public class SwingNovice extends JPanel implements ClientInterface {
     public static List<Profession> professions;
     public static List<Expert> experts;
     public static List<Project> projects;
-
-//    public static CompanyDAO companyDAO;
-//    public static ProfessionDAO professionDAO;
-//    public static ExpertDAO expertDAO;
-//    public static ProjectDAO projectDAO;
 
     public static Socket com;
 
@@ -54,13 +50,15 @@ public class SwingNovice extends JPanel implements ClientInterface {
         j.setVisible(true);
         j.setSize(750, 600);
     }
-    public void run(){
+
+    public void run() {
         JFrame j = new JFrame("专家信息管理系统");
         j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         j.add(new SwingNovice(), BorderLayout.CENTER);
         j.setVisible(true);
         j.setSize(750, 600);
     }
+
     public void registerSocket(Socket socket){
         com = socket;
         try {

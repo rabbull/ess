@@ -19,7 +19,7 @@ public class Server implements ServerInterface {
 
     private CommandRouter commandRouter;
 
-    public static SqlSession session;
+    public SqlSession session;
 
     public Server(ServerSocket serverSocket) {
         this.registerServerSocket(serverSocket);

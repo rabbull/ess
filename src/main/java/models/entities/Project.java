@@ -13,12 +13,14 @@ public class Project extends Model {
     private Date biddingDateEnd;
     private Integer duration;
     private String location;
-    private BiddingType biddingType;
-    private BiddingMethod biddingMethod;
-    private IndustryType industryType;
-    private OrgType orgType;
+    private Integer biddingType;
+    private Integer biddingMethod;
+    private Integer industryType;
+    private Integer orgType;
+    private String code;
+    private String bidder;
 
-    public Project(String name, Integer amount, Integer numExpertExpected, Integer numExpertReal, Date biddingDateBegin, Date biddingDateEnd, Integer duration, String location, BiddingType biddingType, BiddingMethod biddingMethod, IndustryType industryType, OrgType orgType) {
+    public Project(String name, Integer amount, Integer numExpertExpected, Integer numExpertReal, Date biddingDateBegin, Date biddingDateEnd, Integer duration, String location, Integer biddingType, Integer biddingMethod, Integer industryType, Integer orgType, String code, String bidder) {
         this.name = name;
         this.amount = amount;
         this.numExpertExpected = numExpertExpected;
@@ -31,38 +33,56 @@ public class Project extends Model {
         this.biddingMethod = biddingMethod;
         this.industryType = industryType;
         this.orgType = orgType;
+        this.code = code;
+        this.bidder = bidder;
     }
 
-    public BiddingType getBiddingType() {
+    public Integer getBiddingType() {
         return biddingType;
     }
 
-    public void setBiddingType(BiddingType biddingType) {
+    public void setBiddingType(Integer biddingType) {
         this.biddingType = biddingType;
     }
 
-    public BiddingMethod getBiddingMethod() {
+    public Integer getBiddingMethod() {
         return biddingMethod;
     }
 
-    public void setBiddingMethod(BiddingMethod biddingMethod) {
+    public void setBiddingMethod(Integer biddingMethod) {
         this.biddingMethod = biddingMethod;
     }
 
-    public IndustryType getIndustryType() {
+    public Integer getIndustryType() {
         return industryType;
     }
 
-    public void setIndustryType(IndustryType industryType) {
+    public void setIndustryType(Integer industryType) {
         this.industryType = industryType;
     }
 
-    public OrgType getOrgType() {
+    public Integer getOrgType() {
         return orgType;
     }
 
-    public void setOrgType(OrgType orgType) {
+    public void setOrgType(Integer orgType) {
         this.orgType = orgType;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getBidder() {
+        return bidder;
+    }
+
+    public void setBidder(String bidder) {
+        this.bidder = bidder;
     }
 
     public String getName() {

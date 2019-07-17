@@ -22,17 +22,8 @@ public class Fuck {
     }
 
     public static void main(String[] args) {
-        Reader reader = null;
-        try {
-            reader = Resources.getResourceAsReader("mybatis.cfg.xml");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader);
-        SqlSession session = factory.openSession();
-
-        RequestAllCommandProcessor processor = new RequestAllCommandProcessor(session);
-        Command ret = processor.run(new String[]{"Log"});
-        System.out.println(ret.getArgs()[0]);
+        Object a = new A();
+        ((A) a).name = "shit";
+        System.out.println(JSON.toJSONString(a));
     }
 }
