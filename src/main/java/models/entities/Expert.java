@@ -7,6 +7,16 @@ public class Expert extends Model {
     private Boolean sex;  // true for male, vice versa
     private String phoneNumber;
 
+    public Integer getCompany() {
+        return company;
+    }
+
+    public void setCompany(Integer company) {
+        this.company = company;
+    }
+
+    private Integer company;
+
     public Expert() {}
 
     public Expert(String name, boolean sex, String phoneNumber) {

@@ -1,7 +1,9 @@
 package mappers;
 
+import models.Model;
+
 import java.util.Collection;
 
 public interface GetAllable {
-    Collection<Object> getAll() throws Exception;
+    Collection<Model> getAll() throws Exception;
 }
