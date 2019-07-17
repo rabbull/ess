@@ -1,15 +1,15 @@
-package command.processors.sheets;
+package models.sheets;
 
 import models.entities.*;
 
-public class ProjectSheet {
+public class ProjectGetAllSheet {
     private Project project;
     private BiddingType biddingType;
     private BiddingMethod biddingMethod;
     private IndustryType industryType;
     private OrgType orgType;
 
-    public ProjectSheet(Project project, BiddingType biddingType, BiddingMethod biddingMethod, IndustryType industryType, OrgType orgType) {
+    public ProjectGetAllSheet(Project project, BiddingType biddingType, BiddingMethod biddingMethod, IndustryType industryType, OrgType orgType) {
         this.project = project;
         this.biddingType = biddingType;
         this.biddingMethod = biddingMethod;

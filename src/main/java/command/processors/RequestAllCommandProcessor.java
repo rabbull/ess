@@ -2,18 +2,16 @@ package command.processors;
 
 import com.alibaba.fastjson.JSON;
 import command.Command;
-import command.processors.sheets.ExpertSheet;
-import command.processors.sheets.ProjectSheet;
+import models.sheets.ExpertGetAllSheet;
+import models.sheets.ProjectGetAllSheet;
 import mappers.*;
 import models.Model;
 import models.entities.*;
 import org.apache.ibatis.session.SqlSession;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class RequestAllCommandProcessor implements CommandProcessor {
 
@@ -35,7 +33,7 @@ public class RequestAllCommandProcessor implements CommandProcessor {
             } catch (Exception e) {
                 return new Command("InternalError");
             }
-            ArrayList<ExpertSheet> results = new ArrayList<>();
+            ArrayList<ExpertGetAllSheet> results = new ArrayList<>();
             for (Model expertObj : experts) {
                 Expert expert = (Expert) expertObj;
                 int companyId = expert.getCompany();
@@ -49,7 +47,7 @@ public class RequestAllCommandProcessor implements CommandProcessor {
                 if (company == null) {
                     return new Command("CorruptDatabase");
                 }
-                ExpertSheet sheet = new ExpertSheet(expert, company);
+                ExpertGetAllSheet sheet = new ExpertGetAllSheet(expert, company);
                 results.add(sheet);
             }
             return new Command("Object", Collections.singleton(JSON.toJSONString(results)));
@@ -70,7 +68,7 @@ public class RequestAllCommandProcessor implements CommandProcessor {
             } catch (Exception e) {
                 return new Command("InternalError");
             }
-            ArrayList<ProjectSheet> results = new ArrayList<>();
+            ArrayList<ProjectGetAllSheet> results = new ArrayList<>();
             for (Model projectObj : projects) {
                 Project project = (Project) projectObj;
                 BiddingMethod biddingMethod = null;
@@ -104,7 +102,7 @@ public class RequestAllCommandProcessor implements CommandProcessor {
                 if (biddingMethod == null || biddingType == null || industryType == null || orgType == null) {
                     return new Command("CorruptDatabase");
                 }
-                ProjectSheet sheet = new ProjectSheet(project, biddingType, biddingMethod, industryType, orgType);
+                ProjectGetAllSheet sheet = new ProjectGetAllSheet(project, biddingType, biddingMethod, industryType, orgType);
                 results.add(sheet);
             }
             return new Command("Object", Collections.singleton(JSON.toJSONString(results)));

@@ -4,6 +4,7 @@ import command.exceptions.InvalidCommandFormatException;
 import models.entities.Expert;
 import models.entities.Profession;
 import models.relations.Invites;
+import models.sheets.Sheet_selection;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -17,7 +18,6 @@ import java.awt.event.ItemListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;

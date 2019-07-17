@@ -1,13 +1,13 @@
-package command.processors.sheets;
+package models.sheets;
 
 import models.entities.Company;
 import models.entities.Expert;
 
-public class ExpertSheet {
+public class ExpertGetAllSheet {
     private Expert expert;
     private Company company;
 
-    public ExpertSheet(Expert expert, Company company) {
+    public ExpertGetAllSheet(Expert expert, Company company) {
         this.expert = expert;
         this.company = company;
     }
