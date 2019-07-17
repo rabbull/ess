@@ -22,75 +22,77 @@ import models.entities.Project;
 import models.relations.Invites;
 
 
-public class SelectingExp {
+public class SelectingExp extends JPanel{
     //抽签需要填写的信息
-    public static String[] s_conditions = {"招标项目名称", "招标金额（单位：万元）", "评标地点", "评标时段", "招标人名称"};
+    private  String[] s_conditions = {"招标项目名称", "招标金额（单位：万元）", "评标地点", "评标时段", "招标人名称"};
 
-    public static JTextField[] selection_condition_inputs = new JTextField[s_conditions.length];
+    private  JTextField[] selection_condition_inputs = new JTextField[5];
 
-    public static JComboBox<String> Biding_type;
+    private  JComboBox<String> Biding_type;
 
-    public static JComboBox<String> Biding_method;
+    private  JComboBox<String> Biding_method;
 
-    public static JComboBox<String> industry_type;
+    private  JComboBox<String> industry_type;
 
-    public static JComboBox<String> organ_type;
+    private  JComboBox<String> organ_type;
 
-    public static String[] Biding_options = {"招标类型——1", "招标类型——2", "招标类型——3", "招标类型——4"};
+    private  String[] Biding_options = {"招标类型——1", "招标类型——2", "招标类型——3", "招标类型——4"};
 
-    public static String[] method_options = {"招标方式——1", "招标方式——2", "招标方式——3", "招标方式——4",};
+    private  String[] method_options = {"招标方式——1", "招标方式——2", "招标方式——3", "招标方式——4",};
 
-    public static String[] industry_options = {"行业类型1", "行业类型2", "行业类型3"};
+    private  String[] industry_options = {"行业类型1", "行业类型2", "行业类型3"};
 
-    public static String[] organ_options = {"组织形式1", "组织形式2", "组织形式3"};
+    private  String[] organ_options = {"组织形式1", "组织形式2", "组织形式3"};
 
-    public static JTextField[] biding_time_start_inputs = new JTextField[5];
+    private  JTextField[] biding_time_start_inputs = new JTextField[5];
 
-    public static JTextField[] biding_time_end_inputs = new JTextField[5];
+    private  JTextField[] biding_time_end_inputs = new JTextField[5];
 
-    public static JTextField avoid_company_name, avoid_reason;
+    private  JTextField avoid_company_name, avoid_reason;
 
-    public static Object[] ids = {"公司名称", "回避原因"};
+    private  Object[] ids = {"公司名称", "回避原因"};
 
-    public static JComboBox<String> maj_1_main;
+//    private  JComboBox<String> maj_1_main;
+//
+//    private  JComboBox<String> maj_2_main;
+//
+//    private  JComboBox<String> maj_3_main;
+//
+//    private  JComboBox<String> maj_1_aux;
+//
+//    private  JComboBox<String> maj_2_aux;
+//
+//    private  JComboBox<String> maj_3_aux;
+//
+//    private  JTextField total_personel;
+//
+//    private  JLabel total_per_lable;
+//
+//    private  List<Profession> pro_chunks;
+//
+//    private  String[] maj_1_m = new String[100];
+//
+//    private  String[] maj_2_m = new String[100];
+//
+//    private  String[] maj_3_m = new String[100];
+//
+//    private  String[] maj_2_a = new String[100];
+//
+//    private  String[] maj_3_a = new String[100];
+//
+//    private  List<Profession> maj_2 = new ArrayList<>();
+//
+//    private  List<Profession> maj_3 = new ArrayList<>();
+//
+//    private  Expert[] exp_selected;
+//
+//    private  ArrayList<String> aux_pros;
+//
+//    private  ArrayList<String> main_pros;
 
-    public static JComboBox<String> maj_2_main;
+    Integer left_exps = new Integer(0);
 
-    public static JComboBox<String> maj_3_main;
-
-    public static JComboBox<String> maj_1_aux;
-
-    public static JComboBox<String> maj_2_aux;
-
-    public static JComboBox<String> maj_3_aux;
-
-    public static JTextField total_personel;
-
-    public static JLabel total_per_lable;
-
-    public static List<Profession> pro_chunks;
-
-    public static String[] maj_1_m = new String[100];
-
-    public static String[] maj_2_m = new String[100];
-
-    public static String[] maj_3_m = new String[100];
-
-    public static String[] maj_2_a = new String[100];
-
-    public static String[] maj_3_a = new String[100];
-
-    public static List<Profession> maj_2 = new ArrayList<>();
-
-    public static List<Profession> maj_3 = new ArrayList<>();
-
-    public static Expert[] exp_selected;
-
-    public static ArrayList<String> aux_pros;
-
-    public static ArrayList<String> main_pros;
-
-    public static JComponent SelectingExDeliver(boolean isRerolling, Project p) {
+    public  SelectingExp() {
         try{
             Command get_method_options = new Command("requestall BiddingMethod");
             SwingNovice.comOut.write(get_method_options.serialize());
@@ -171,10 +173,12 @@ public class SelectingExp {
 
 
 
-        JPanel result = new JPanel(false);
-        result.setLayout(new GridLayout(3, 1));
-        result.setPreferredSize(new Dimension(700, 1200));
-        JScrollPane jsp_outtermost = new JScrollPane(result);
+//        JPanel result = new JPanel(false);
+//        result.setLayout(new GridLayout(3, 1));
+//        result.setPreferredSize(new Dimension(700, 1200));
+        this.setLayout(new GridLayout(3, 1));
+        this.setPreferredSize(new Dimension(700, 1200));
+//        JScrollPane jsp_outtermost = new JScrollPane(result);
         JPanel outter_hori_box = new JPanel();
         outter_hori_box.setBorder(new TitledBorder("基本信息填写"));
         outter_hori_box.setLayout(new GridLayout(12, 1));
@@ -203,7 +207,7 @@ public class SelectingExp {
             public void caretUpdate(CaretEvent e) {
                 try {
                     int number = Integer.parseInt(person_input.getText());
-                    total_per_lable.setText("还需要设置" + number + "人");
+                    left_exps = number;
                 } catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(null, "输入人数格式错误");
                 }
@@ -275,7 +279,8 @@ public class SelectingExp {
 
         outter_hori_box.add(biding_time_end);
 
-        result.add(jsp_2);
+//        result.add(jsp_2);
+        this.add(jsp_2);
 
         JPanel avoid_comp_selection = new JPanel();
         avoid_comp_selection.setBorder(new TitledBorder("回避公司选择"));
@@ -361,381 +366,31 @@ public class SelectingExp {
         avoid_comp_selection.add(setup);
         avoid_comp_selection.add(jsp_com_table);
 
-        result.add(avoid_comp_selection);
+//        result.add(avoid_comp_selection);
+        this. add(avoid_comp_selection);
 
-        JPanel maj_selecting = new JPanel();
-        maj_selecting.setLayout(new GridLayout(2, 1));
-        maj_selecting.setBorder(new TitledBorder("专家信息填写"));
-        JPanel maj_inputs = new JPanel();
-        maj_inputs.setLayout(new GridLayout(5, 1));
-//--------------------------------------------------------------------------------
-        try{
-            Command get_pros = new Command("Get_professions",Collections.singletonList("all"));
-            SwingNovice.comOut.write(get_pros.serialize());
+        List<String> company_sub  = new ArrayList<>(30);
+        DefaultTableModel mkout = (DefaultTableModel) company_table.getModel();
+        for(int t = 0;t < company_table.getRowCount();t ++){
+            String str_out = "Avoid_company" + "/" + (String)mkout.getValueAt(t,0) + "/" + (String)mkout.getValueAt(t,1);
+            company_sub.add(str_out);
         }
-        catch (IOException ioe){
-            System.out.println(ioe.getMessage());
-        }
-        try{
-            Command pros = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-            if(pros.getCmd().equals("Object")) {
-                String pros_str = String.join(" ",pros.getArgs());
-                pro_chunks = JSON.parseArray(pros_str,Profession.class);
-            }
-        }
-        catch (InvalidCommandFormatException icfe){
-            System.out.println(icfe.getMessage());
-        }
-//--------------------------------------------------------------------------------
-        Box pro_1_box = Box.createHorizontalBox();
-        pro_1_box.add(new JLabel("拟抽取专业"));
-        List<Profession> maj_1 = new ArrayList<>(20);
-        for(Profession m:pro_chunks){
-            if(m.getFather() == null){
-                maj_1.add(m);
-            }
-        }
-        maj_1_m = new String[maj_1.size()];
-        for(int l = 0;l < maj_1.size();l ++){
-            maj_1_m[l] = maj_1.get(l).getCode() + "/" + maj_1.get(l).getName();
-        }
-        maj_1_main = new JComboBox<>(maj_1_m);
-        maj_1_main.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (!maj_1_main.getSelectedItem().equals("全部")) {
+        Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
+        Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
 
-                    Profession selected = (Profession) maj_1_main.getSelectedItem();
-                    for(Profession pros:pro_chunks){
-                        if(pros.getFather().equals(selected)){
-                            maj_2.add(pros);
-                        }
-                    }
-                    for(int r = 0; r < maj_2.size();r ++){
-                        maj_2_m[r] = maj_2.get(r).getCode() + "/" + maj_2.get(r).getName();
-                    }
-                    maj_2_main.setVisible(true);
-
-                } else {
-                    maj_2_main.setVisible(false);
-                    maj_3_main.setVisible(false);
-                }
-            }
-        });
-        pro_1_box.add(maj_1_main);
-
-        maj_2_main = new JComboBox<>(maj_2_m);
-        maj_2_main.setVisible(false);
-        maj_2_main.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (maj_2_main.getSelectedItem().equals("全部")) {
-                    Profession selected = (Profession) maj_2_main.getSelectedItem();
-                    for(Profession pros:pro_chunks){
-                        if(pros.getFather().equals(selected)){
-                            maj_3.add(pros);
-                        }
-                    }
-                    for(int r = 0; r < maj_3.size();r ++){
-                        maj_3_m[r] = maj_3.get(r).getCode() + "/" + maj_3.get(r).getName();
-                    }
-                    maj_3_main.setVisible(true);
-                } else {
-                    maj_3_main.setVisible(false);
-                }
-            }
-        });
-        pro_1_box.add(maj_2_main);
-        maj_3_main = new JComboBox<>(maj_3_m);
-        maj_3_main.setVisible(false);
-        pro_1_box.add(maj_3_main);
-
-        Box pro_2_box = Box.createHorizontalBox();
-        pro_2_box.add(new JLabel("替补专业"));
-//        String[] maj_1 = {"全部","一级专业1","一级专业二","一级专业三"};
-        //maj_1.clear();
-        maj_2.clear();
-        maj_3.clear();
-
-        maj_1_aux = new JComboBox<>(maj_1_m);
-        maj_1_aux.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (maj_1_aux.getSelectedItem().equals("全部")) {
-                    Profession selected = (Profession) maj_1_aux.getSelectedItem();
-                    for(Profession pros:pro_chunks){
-                        if(pros.getFather().equals(selected)){
-                            maj_2.add(pros);
-                        }
-                    }
-                    for(int r = 0; r < maj_2.size();r ++){
-                        maj_2_a[r] = maj_2.get(r).getCode() + maj_2.get(r).getName();
-                    }
-                    maj_2_aux.setVisible(true);
-                } else {
-                    maj_2_aux.setVisible(false);
-                    maj_3_aux.setVisible(false);
-                }
-            }
-        });
-        pro_2_box.add(maj_1_aux);
-//        String[] maj_2 = {"全部","2级专业1","2级专业二","2级专业三"};
-        maj_2_aux = new JComboBox<>(maj_2_a);
-        maj_2_aux.setVisible(false);
-        maj_2_aux.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (maj_2_aux.getSelectedItem().equals("全部")) {
-                    Profession selected = (Profession) maj_2_aux.getSelectedItem();
-                    for(Profession pros:pro_chunks){
-                        if(pros.getFather().equals(selected)){
-                            maj_3.add(pros);
-                        }
-                    }
-                    for(int r = 0; r < maj_3.size();r ++){
-                        maj_3_a[r] = maj_3.get(r).getCode() + "/" + maj_3.get(r).getName();
-                    }
-                    maj_3_aux.setVisible(true);
-                } else {
-                    maj_3_aux.setVisible(false);
-                }
-            }
-        });
-        pro_2_box.add(maj_2_aux);
-//        String[] maj_3 = {"全部","3级专业1","3级专业二","3级专业三"};
-        maj_3_aux = new JComboBox<>(maj_3_a);
-        maj_3_aux.setVisible(false);
-        pro_2_box.add(maj_3_aux);
-
-        maj_inputs.add(pro_1_box);
-        maj_inputs.add(pro_2_box);
-
-        Box capabilities = Box.createHorizontalBox();
-        ButtonGroup bg = new ButtonGroup();
-        JRadioButton no_need = new JRadioButton("不需要");
-        JRadioButton need = new JRadioButton("需要");
-        bg.add(no_need);
-        bg.add(need);
-        capabilities.add(new JLabel("是否需要电子评标能力:"));
-        capabilities.add(no_need);
-        capabilities.add(need);
-        maj_inputs.add(capabilities);
-
-        total_personel = new JTextField();
-        Box total_box = Box.createHorizontalBox();
-        total_box.setPreferredSize(new Dimension(150, 0));
-        total_box.add(new JLabel("该条件拟抽取专家数"));
-        total_box.add(total_personel);
-        total_per_lable = new JLabel("尚未指定人数");
-        if(isRerolling) total_per_lable.setText("还需要" + (p.getNumExpertExpected() - p.getNumExpertReal()) + "人");
-        total_box.add(total_per_lable);
-        maj_inputs.add(total_box);
-
-        JTable conditions = new JTable();
-        DefaultTableModel cond_m = (DefaultTableModel) conditions.getModel();
-        Object[] c_ids = {"评标专业", "专业等级", "人数"};
-        cond_m.setColumnIdentifiers(c_ids);
-        cond_m.setRowCount(0);
-        conditions.setModel(cond_m);
-        conditions.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        conditions.getColumn("评标专业").setPreferredWidth(300);
-        conditions.getColumn("专业等级").setPreferredWidth(300);
-        conditions.getColumn("人数").setPreferredWidth(100);
-
-
-        Box final_btns = Box.createHorizontalBox();
-        JScrollPane jsp_cond = new JScrollPane(conditions);
-
-
-
-        JButton save = new JButton("保存已经填写的信息");
-        JButton init = new JButton("开始抽签");
-        init.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JPanel out_panel = new JPanel();
-                out_panel.setBorder(new TitledBorder("抽签信息"));
-                out_panel.setPreferredSize(new Dimension(400, 400));
-                out_panel.setLayout(new GridLayout(2, 1));
-                TextArea Rolling_process = new TextArea();
-                Rolling_process.append("（抽签信息）");
-                out_panel.add(Rolling_process);
-
-//                String[][] exp_selected = {{"王八", "四川大学", "17883430983"}, {"小土豆", "贵州大学", "14629382734"}};
-                try{
-                    List<String> company_sub  = new ArrayList<>(30);
-                    Sheet_selection subs;
-                    DefaultTableModel mkout = (DefaultTableModel) company_table.getModel();
-                    for(int t = 0;t < company_table.getRowCount();t ++){
-                        String str_out = "Avoid_company" + "/" + (String)mkout.getValueAt(t,0) + "/" + (String)mkout.getValueAt(t,1);
-                        company_sub.add(str_out);
-                    }
-                    Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
-                    Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
-                    subs = new Sheet_selection(selection_condition_inputs[0].getText().replaceAll("\\s*",""),
-                                            Long.parseLong(selection_condition_inputs[1].getText().replaceAll("\\s*","")),
-                                            selection_condition_inputs[2].getText().replaceAll("\\s*",""),
-                                            Long.parseLong(selection_condition_inputs[3].getText().replaceAll("\\s*","")),
-                                            selection_condition_inputs[4].getText().replaceAll("\\s*",""),
-                                            (String)Biding_type.getSelectedItem(),
-                                            (String)Biding_method.getSelectedItem(),
-                                            (String)industry_type.getSelectedItem(),
-                                            (String)organ_type.getSelectedItem(),
-                                            starting_date,ending_date,company_sub,main_pros,aux_pros);
-                    Command Roll = new Command("submit",Collections.singletonList(subs.toString()));
-                    SwingNovice.comOut.write(Roll.serialize());
-                }
-                catch(IOException ioe){
-                    System.out.println(ioe.getMessage());
-                }
-                try{
-                    Command roll_res = Command.getOneCommandFromInputStream(SwingNovice.comIn);
-                    if(roll_res.getCmd().equals("Object")) {
-                        String res_str = String.join(" ",roll_res.getArgs());
-                        List<Invites> exp_res = JSON.parseArray(res_str,Invites.class);
-                        exp_selected = new Expert[exp_res.size()];
-                        for(int o = 0;o < exp_selected.length;o ++){
-                            exp_selected[o] = exp_res.get(o).getExpert();
-                        }
-                    }
-                }
-                catch(InvalidCommandFormatException icfe){
-                    System.out.println(icfe.getMessage());
-                }
-
-
-                JCheckBox[] exp_checks = new JCheckBox[exp_selected.length];
-                JTextField[] exp_reason = new JTextField[exp_selected.length];
-                JPanel exps = new JPanel();
-                exps.setLayout(new GridLayout(exp_selected.length + 1, 1));
-                exps.setPreferredSize(new Dimension(600, 35 * (exp_selected.length + 1)));
-                JScrollPane jsp_exps = new JScrollPane(exps);
-                jsp_exps.setBorder(new TitledBorder("抽取专家结果"));
-                JPanel ids = new JPanel();
-                ids.setLayout(new GridLayout(1, 5));
-                ids.add(new JLabel(""));
-                ids.add(new JLabel("姓名"));
-                ids.add(new JLabel("单位"));
-                ids.add(new JLabel("联系方式"));
-                exps.add(ids);
-                for (int i = 0; i < exp_selected.length; i++) {
-                    JPanel temp = new JPanel();
-                    temp.setLayout(new GridLayout(1, 5));
-                    exp_checks[i] = new JCheckBox();
-                    exp_checks[i].setVisible(false);
-                    exp_reason[i] = new JTextField();
-                    exp_reason[i].setVisible(false);
-                    exp_reason[i].setEnabled(true);
-                    JCheckBox check_temp = exp_checks[i];
-                    JTextField reason_temp = exp_reason[i];
-                    temp.add(exp_checks[i]);
-//                    exp_checks[i].addItemListener(new ItemListener() {
-//                        @Override
-//                        public void itemStateChanged(ItemEvent e) {
-//                            if (check_temp.isSelected()) {
-//                                reason_temp.setEnabled(true);
-//                            } else {
-//                                reason_temp.setEnabled(false);
-//                                reason_temp.setText("");
-//                            }
-//                        }
-//                    });
-                    temp.add(new JLabel(exp_selected[i].getName()));
-                    temp.add(new JLabel(exp_selected[i].getSex().toString()));
-                    temp.add(new JLabel(exp_selected[i].getPhoneNumber()));
-                    temp.add(exp_reason[i]);
-                    temp.setBorder(new EtchedBorder());
-                    exps.add(temp);
-                }
-                out_panel.add(jsp_exps);
-
-
-                JOptionPane.showMessageDialog(null, out_panel);
-
-            }
-        });
-        JButton add_new_exps = new JButton("添加条件");
-        add_new_exps.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(maj_1_main.getSelectedItem().equals(null) || maj_1_aux.getSelectedItem().equals(null)  || total_personel.getText().equals("")){
-                    JOptionPane.showMessageDialog(null,"信息尚未完整");
-                    return;
-                }
-                DefaultTableModel m = (DefaultTableModel) conditions.getModel();
-                List<Object> out_main = new ArrayList<Object>();
-
-                    out_main.add(maj_1_main.getSelectedItem());
-
-                    out_main.add(maj_2_main.getSelectedItem());
-
-                    out_main.add(maj_3_main.getSelectedItem());
-                Object[] new_row = new Object[3];
-                if(out_main.get(0).equals("全部")){
-                    new_row[0] = out_main.get(0);
-                    new_row[1] = 1;
-                    main_pros.add(((String)out_main.get(0)).split("/")[0]);
-                }
-                else if(out_main.get(1).equals("全部")){
-                    new_row[0] = out_main.get(1);
-                    new_row[1] = 2;
-                    main_pros.add(((String)out_main.get(1)).split("/")[0]);
-                }
-                else {
-                    new_row[0] = out_main.get(2);
-                    new_row[1] = 3;
-                    main_pros.add(((String) out_main.get(2)).split("/")[0]);
-                }
-                new_row[2] = total_personel.getText();
-
-                List<String> out_aux = new ArrayList<>();
-                out_aux.add((String) maj_1_aux.getSelectedItem());
-                out_aux.add((String) maj_2_aux.getSelectedItem());
-                out_aux.add((String) maj_3_aux.getSelectedItem());
-                if(out_aux.get(0).equals("全部")){
-                    aux_pros.add(out_aux.get(0).split("/")[0]);
-                }
-                else if(out_aux.get(1).equals("全部")){
-                    aux_pros.add(out_aux.get(1).split("/")[0]);
-                }
-                else {
-                    aux_pros.add(out_aux.get(2).split("/")[0]);
-                }
-
-                m.addRow(new_row);
-                conditions.setModel(m);
-            }
-        });
-        JButton del_exps = new JButton("删除条件");
-        del_exps.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DefaultTableModel m = (DefaultTableModel) conditions.getModel();
-                int selrow = conditions.getSelectedRow();
-                if(selrow == -1){
-                    JOptionPane.showMessageDialog(null,"暂未选择任何行");
-                }
-                m.removeRow(selrow);
-                aux_pros.remove(selrow);
-                main_pros.remove(selrow);
-            }
-        });
-        final_btns.add(add_new_exps);
-        final_btns.add(del_exps);
-        final_btns.add(save);
-        final_btns.add(init);
-        maj_inputs.add(final_btns);
-
-        maj_selecting.add(maj_inputs);
-        maj_selecting.add(jsp_cond);
-
-        //若重新抽取则只需要返回专业选取界面
-        if(isRerolling){
-            return maj_selecting;
+        String[] s_inputs = new String[5];
+        for(int g = 0;g < s_inputs.length;g ++){
+            s_inputs[g] = selection_condition_inputs[g].getText();
         }
 
-        result.add(maj_selecting);
-
-        return jsp_outtermost;
+        this.add(new conditions(s_inputs,
+                (String)Biding_type.getSelectedItem(),
+                (String)Biding_method.getSelectedItem(),
+                (String)industry_type.getSelectedItem(),
+                (String)organ_type.getSelectedItem(),
+                starting_date,
+                ending_date,
+                company_sub,
+                left_exps));
     }
 }

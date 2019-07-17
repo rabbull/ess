@@ -7,7 +7,6 @@ import mappers.LogMapper;
 import mappers.ProjectMapper;
 import models.entities.Log;
 import org.apache.ibatis.session.SqlSession;
-import sun.misc.Request;
 
 import java.util.Collection;
 import java.util.Collections;

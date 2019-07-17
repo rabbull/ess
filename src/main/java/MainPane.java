@@ -26,34 +26,35 @@ import models.relations.Invites;
 import org.apache.commons.math3.analysis.function.Exp;
 
 
-public class MainPane {
+public class MainPane extends JPanel{
 
-    public static Dimension buttonSize = new Dimension(150, 50);
+    public Dimension buttonSize = new Dimension(150, 50);
 
 
 //    public static Object[][] expertInformation = {{"asdasd", "asdawr", "asdarsafwfe", "asdarsr", "asdawdsd", "adwsad", "adsaw", "asdawd"}, {"1231231", "qwe2w2wrawe", "asdqwrw", "aef3efw", "asadwd", "asdawds", "asdawsa", "asdawd"}};
 
-    public static Object[][] expertInformation;
+    public Object[][] expertInformation;
 
 //    public static Object[][] projectInformation = {{"1000", "asd", "qwdq"}, {"qwd", "asd", "asd"}};
 
-    public static Object[][] projectInformation;
+    public Object[][] projectInformation;
 
-    public static Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
+    public Object[] expertTableTitles = {"ID","姓名","性别","电话号码","公司"};
 
-    public static String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
+    public String[] filterConditions = {"ID","姓名","性别","电话号码","公司"};
 
-    public static Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
+    public Object[] ProjectTableTitles = {"项目名称","项目名称","招标金额","招标类型","招标方式","行业类型"};
 
-    public static List<Project> Proj_chunk;
+    public List<Project> Proj_chunk;
 
-    public static Project p;
+    public Project p;
 
-    public static List<Expert> Exper_chunk;
+    public List<Expert> Exper_chunk;
 
-    public static JComponent AdminPanelDeliver() {
-        JPanel result = new JPanel(false);
-        result.setLayout(new GridLayout(2, 2, 6, 6));
+    public  MainPane() {
+        this.setLayout(new GridLayout(2,2,6,6));
+//        JPanel result = new JPanel(false);
+//        result.setLayout(new GridLayout(2, 2, 6, 6));
 
         Box box_1 = Box.createVerticalBox();
         box_1.add(new JLabel("专家数据库"));
@@ -131,7 +132,8 @@ public class MainPane {
         jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         jsp.setPreferredSize(new Dimension(500, 400));
         box_1.add(jsp);
-        result.add(box_1);
+//        result.add(box_1);
+        this.add(box_1);
 
         JPanel Table_man = new JPanel();
         Table_man.setLayout(new GridLayout(3, 1));
@@ -298,7 +300,7 @@ public class MainPane {
                             try{
                                 List<String> out = new ArrayList<>(10);
                                 for(int o = 0;o < exp_reason.length;o ++){
-                                    invs.get(o).setReason(exp_reason[o].getText());
+                                    invs.get(o).setReason(exp_reason[o].getText().replaceAll("\\s*",""));
                                     out.add(invs.get(o).getProject().getId() + "/" + invs.get(o).getReason());
                                 }
                                 Command submit_abs = new Command("submit_abs", out);
@@ -402,7 +404,8 @@ public class MainPane {
         Table_man.add(Filter);
         Table_man.add(init_search);
 
-        result.add(Table_man);
+//        result.add(Table_man);
+        this.add(Table_man);
 
         Box Existing_proj = Box.createVerticalBox();
         Existing_proj.add(new JLabel("项目列表"));
@@ -450,15 +453,20 @@ public class MainPane {
 
         JScrollPane jsp2 = new JScrollPane(Proj_table);
         Existing_proj.add(jsp2);
-        result.add(Existing_proj);
+//        result.add(Existing_proj);
+        this.add(Existing_proj);
 
         JPanel btns2 = new JPanel();
         btns2.setBorder(new TitledBorder("项目操作"));
         btns2.setLayout(new GridLayout(3, 1));
-        JLabel invisible = new JLabel("");
-        invisible.setPreferredSize(new Dimension(150, 50));
-        invisible.setVisible(false);
-        btns2.add(invisible);
+        JButton update = new JButton("刷新专家与项目表单");
+        update.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        })
+        btns2.add(update);
 
         JButton Complement_Rolling = new JButton("对当前项目补充抽取人员");
         Complement_Rolling.addActionListener(new ActionListener() {
@@ -479,7 +487,9 @@ public class MainPane {
                 out_p.add(new JLabel(out.toString()));
                         for(Project proj:Proj_chunk) {
                             if(proj.getId().equals((Integer) model.getValueAt(selected_r,0))) {
-                                out_p.add(SelectingExp.SelectingExDeliver(true, proj));
+//                                String[]
+                                //如何补抽
+//                                out_p.add();
                             }
                         }
                         int response = JOptionPane.showConfirmDialog(null, jsp_out, "补充抽取", JOptionPane.YES_NO_OPTION);
@@ -503,8 +513,6 @@ public class MainPane {
                         break;
                     }
                 }
-
-
                 try{
                     Command get_pro_exp = new Command("requestprojexpert",Collections.singletonList(p.getId().toString()));
                     SwingNovice.comOut.write(get_pro_exp.serialize());
@@ -565,7 +573,9 @@ public class MainPane {
         });
         scoring.setPreferredSize(new Dimension(150, 50));
         btns2.add(scoring);
-        result.add(btns2);
-        return result;
+//        result.add(btns2);
+        this.add(btns2);
+//        return result;
+//        super(result);
     }
 }
