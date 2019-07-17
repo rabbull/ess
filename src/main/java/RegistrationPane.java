@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class RegistrationPane extends JPanel{
     private   String[] expertInfoItems = {"姓名","性别","电话号码","公司"};  //录入专家信息的表的labels
 
     private   JTextField[] textFields = new JTextField[expertInfoItems.length];
+
+    private Socket comIn;
+
+    private Socket comOut;
 
     public  RegistrationPane() {
         Box jresult = Box.createVerticalBox();

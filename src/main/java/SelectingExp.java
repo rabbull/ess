@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.*;
 import java.util.List;
 
@@ -51,6 +52,10 @@ public class SelectingExp extends JPanel{
     private  JTextField avoid_company_name, avoid_reason;
 
     private  Object[] ids = {"公司名称", "回避原因"};
+
+    private Socket comIn;
+
+    private Socket comOut;
 
 //    private  JComboBox<String> maj_1_main;
 //

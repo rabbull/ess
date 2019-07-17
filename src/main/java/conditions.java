@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -76,6 +77,10 @@ public class conditions extends JPanel {
     private  ArrayList<String> main_pros;
 
     private Integer left_experts;
+
+    private Socket comIn;
+
+    private Socket comOut;
 
     public conditions(String[] selection_condition_inputs, String biding_type, String biding_method, String industry_type, String organ_type, Date biding_time_start_inputs, Date biding_time_end_inputs, List<String> company_subs,Integer left_experts) {
         this.selection_condition_inputs = selection_condition_inputs;
