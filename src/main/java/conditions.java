@@ -308,10 +308,11 @@ public class conditions extends JPanel {
 //                    Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
 //                    Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
                     subs = new Sheet_selection(selection_condition_inputs[0].replaceAll("\\s*",""),
-                            Long.parseLong(selection_condition_inputs[1].replaceAll("\\s*","")),
-                            selection_condition_inputs[2].replaceAll("\\s*",""),
-                            Long.parseLong(selection_condition_inputs[3].replaceAll("\\s*","")),
-                            selection_condition_inputs[4].replaceAll("\\s*",""),
+                            selection_condition_inputs[1].replaceAll("\\s*",""),
+                            Long.parseLong(selection_condition_inputs[2].replaceAll("\\s*","")),
+                            selection_condition_inputs[3].replaceAll("\\s*",""),
+                            Long.parseLong(selection_condition_inputs[4].replaceAll("\\s*","")),
+                            selection_condition_inputs[5].replaceAll("\\s*",""),
                             (String)Biding_type,
                             (String)Biding_method,
                             (String)industry_type,

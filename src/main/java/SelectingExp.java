@@ -27,9 +27,9 @@ import models.relations.Invites;
 
 public class SelectingExp extends JPanel{
     //抽签需要填写的信息
-    private  String[] s_conditions = {"招标项目名称", "招标金额（单位：万元）", "评标地点", "评标时段", "招标人名称"};
+    private  String[] s_conditions = {"项目编号","招标项目名称", "招标金额（单位：万元）", "评标地点", "评标时段", "招标人名称"};
 
-    private  JTextField[] selection_condition_inputs = new JTextField[5];
+    private  JTextField[] selection_condition_inputs = new JTextField[6];
 
     private  JComboBox<String> Biding_type;
 
@@ -389,7 +389,7 @@ public class SelectingExp extends JPanel{
         Date starting_date = new Date(Integer.parseInt(biding_time_start_inputs[0].getText()),Integer.parseInt(biding_time_start_inputs[1].getText()),Integer.parseInt(biding_time_start_inputs[2].getText()),Integer.parseInt(biding_time_start_inputs[3].getText()),Integer.parseInt(biding_time_start_inputs[4].getText()),0);
         Date ending_date = new Date(Integer.parseInt(biding_time_end_inputs[0].getText()),Integer.parseInt(biding_time_end_inputs[1].getText()),Integer.parseInt(biding_time_end_inputs[2].getText()),Integer.parseInt(biding_time_end_inputs[3].getText()),Integer.parseInt(biding_time_end_inputs[4].getText()),0);
 
-        String[] s_inputs = new String[5];
+        String[] s_inputs = new String[6];
         for(int g = 0;g < s_inputs.length;g ++){
             s_inputs[g] = selection_condition_inputs[g].getText();
         }

@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 public class Sheet_selection {
+    private String proj_id;
+
     private String proj_name;
 
     private long biding_amount;
@@ -33,7 +35,8 @@ public class Sheet_selection {
 
     private List<String> aux_Conditions;
 
-    public Sheet_selection(String proj_name, long biding_amount, String biding_location, long biding_timebridge, String bider, String biding_type, String biding_method, String industry_type, String organ_type, Date start_date, Date end_date, List<String> avoid_companies, List<String> main_Conditions, List<String> aux_Conditions) {
+    public Sheet_selection(String proj_id,String proj_name, long biding_amount, String biding_location, long biding_timebridge, String bider, String biding_type, String biding_method, String industry_type, String organ_type, Date start_date, Date end_date, List<String> avoid_companies, List<String> main_Conditions, List<String> aux_Conditions) {
+        this.proj_id = proj_id;
         this.proj_name = proj_name;
         this.biding_amount = biding_amount;
         this.biding_location = biding_location;

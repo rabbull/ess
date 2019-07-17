@@ -54,6 +54,8 @@ public class MainPane extends JPanel{
 
     private DataOutputStream comOut;
 
+    private List<Invites> score_exps;
+
     public  MainPane(DataInputStream com1, DataOutputStream com2) {
         this.comIn = com1;
         this.comOut = com2;
@@ -274,6 +276,8 @@ public class MainPane extends JPanel{
         //搜索组合面板
         JPanel Filter = new JPanel(false);
         Filter.setPreferredSize(new Dimension(100, 100));
+//TODO
+        //搜索本地
 
         JLabel search_title = new JLabel("搜索:");
         JTextField search_tx = new JTextField();
@@ -313,41 +317,7 @@ public class MainPane extends JPanel{
                         return;
                     }
                 }
-                String search_type = new String();
-                for(JRadioButton j:btns){
-                    if(j.isSelected()) search_type = j.getText();
-                }
 
-                Command sear = new Command("search " + search_type + " " + search_text );
-
-                try {
-                    comOut.write(sear.serialize());
-                }
-                catch(IOException ioe){
-                    System.out.println(ioe.fillInStackTrace());
-                }
-
-                try{
-                    Command search_res = Command.getOneCommandFromInputStream(comIn);
-                    if(search_res.getCmd().equals("Object")){
-                        String processed = String.join(" ", search_res.getArgs());
-                        List<Expert> out = JSON.parseArray(processed,Expert.class);
-                        expertInformation = new Object[out.size()][4];
-                        for(int i = 0;i < out.size();i ++){
-                            expertInformation[i][0] = out.get(i).getName();
-                            expertInformation[i][1] = out.get(i).getSex();
-                            expertInformation[i][2] = out.get(i).getPhoneNumber();
-                        }
-                    }
-                    DefaultTableModel or_model = (DefaultTableModel) expertTable.getModel();
-                    for(Object[] j:expertInformation){
-                        or_model.addRow(j);
-                    }
-                    expertTable.setModel(or_model);
-                }
-                catch(InvalidCommandFormatException icfe){
-                    System.out.println(icfe.fillInStackTrace());
-                }
             }
         });
 
@@ -417,9 +387,10 @@ public class MainPane extends JPanel{
                 out_p.add(new JLabel(out.toString()));
                         for(Project proj:Proj_chunk) {
                             if(proj.getId().equals((Integer) model.getValueAt(selected_r,0))) {
-//                                String[]
-                                //如何补抽
-//                                out_p.add();
+                                String[] s_input = new String[6];
+                                s_input[0] = proj.getId().toString();
+                                s_input[1] = proj.getAmount()
+                                conditions cnds = new conditions()
                             }
                         }
                         int response = JOptionPane.showConfirmDialog(null, jsp_out, "补充抽取", JOptionPane.YES_NO_OPTION);
@@ -450,23 +421,20 @@ public class MainPane extends JPanel{
                 catch(IOException ioe){
                     System.out.println(ioe.fillInStackTrace());
                 }
-                String[] exp_namelist = new String[1];
+
                 try{
                     Command exps = Command.getOneCommandFromInputStream(comIn);
                     if(exps.getCmd().equals("Object")){
                         String exps_str = String.join(" ",exps.getArgs());
-                        List<Expert> experts = JSON.parseArray(exps_str,Expert.class);
-                        exp_namelist = new String[experts.size()];
-                        for(int i = 0 ;i < experts.size();i ++){
-                            exp_namelist[i] = experts.get(i).getName();
-                        }
+                        score_exps = JSON.parseArray(exps_str,Invites.class);
+
                     }
                 }
                 catch (InvalidCommandFormatException icfe){
                     System.out.println(icfe.fillInStackTrace());
                 }
 
-                JTextField[] score_input = new JTextField[exp_namelist.length];//用于对于每一个专家打分
+                JTextField[] score_input = new JTextField[score_exps.size()];//用于对于每一个专家打分
                 StringBuilder out = new StringBuilder();
                 DefaultTableModel model = (DefaultTableModel) Proj_table.getModel();
                 int selected_r = Proj_table.getSelectedRow();
@@ -477,9 +445,11 @@ public class MainPane extends JPanel{
                 }
                 Box out_panel = Box.createVerticalBox();
                 out_panel.add(new JLabel(out.toString()));
-                for (int i = 0; i < exp_namelist.length; i++) {
+                for (int i = 0; i < score_exps.size(); i++) {
                     Box bx = Box.createHorizontalBox();
-                    bx.add(new JLabel(exp_namelist[i]));
+                    bx.add(new JLabel(score_exps.get(i).getExpert().getName()));
+                    bx.add(new JLabel(score_exps.get(i).getExpert().getSex().toString()));
+                    bx.add(new JLabel(score_exps.get(i).getExpert().getPhoneNumber()));
                     score_input[i] = new JTextField();
                     bx.add(score_input[i]);
                     out_panel.add(bx);
@@ -487,11 +457,12 @@ public class MainPane extends JPanel{
                 int result = JOptionPane.showConfirmDialog(null, out_panel, "项目人员打分", JOptionPane.OK_CANCEL_OPTION);
                 if (result == 0) {
                     try{
-                        Collection<String> grades = new ArrayList<>(20);
-                        for(int k = 0 ;k < exp_namelist.length;k ++){
-                            grades.add(exp_namelist[k] + " " + score_input[k]);
+                        List<String> score_sub = new ArrayList<>(10);
+                        for(int k = 0 ;k < score_exps.size();k ++){
+                            score_exps.get(k).setScore(Integer.parseInt(score_input[k].getText()));
+                            score_sub.add(score_exps.get(k).getExpert().getId() + "/" + score_exps.get(k).getScore());
                         }
-                        Command submit_grades = new Command("Submit",grades);
+                        Command submit_grades = new Command("Submit",score_sub);
                         comOut.write(submit_grades.serialize());
                     }
                     catch (IOException ioe){
